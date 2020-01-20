@@ -20,8 +20,8 @@ extern "C" {
 
 // unwanted modes should be commented out
 #define DEBUG
-#define TARGET
-//#define GAMESERVER
+//#define TARGET
+#define GAMESERVER
 
 // Color Use Cases
 #define POWER 0     // yellow
@@ -190,8 +190,10 @@ void loop() {
             Serial.println('\n');
 #endif
 
-            changeGPIOstatus(SEND);
           }
+          
+          changeGPIOstatus(SEND);
+  
           // start time for the sending process
           startTime = millis();
           // no interesting message received
@@ -321,13 +323,25 @@ void loop() {
           Serial.println('\n');
 #endif
 
-          // report hit counter by led blinking
-          // blink minimal 10 times
-          for (i = 0; i <= hitCounter || i < 10; i++) {
-            changeGPIOstatus(RECV);
-            delay(200);
-            changeGPIOstatus(OUT);
-            delay(800);
+          if (hitCounter < 5) {
+            // report hit counter by led blinking
+            // blink minimal 10 times
+            for (i = 0; i <= hitCounter || i < 10; i++) {
+              changeGPIOstatus(ERR);
+              delay(200);
+              changeGPIOstatus(OUT);
+              delay(800);
+            }
+          } else
+          {
+            // report hit counter by led blinking
+            // blink minimal 10 times
+            for (i = 0; i <= hitCounter; i++) {
+              changeGPIOstatus(RECV);
+              delay(200);
+              changeGPIOstatus(OUT);
+              delay(800);
+            }
           }
 
           // in 10 sec starts new game
@@ -379,6 +393,7 @@ void loop() {
     if (initVal < 5 || initVal > 850) {
       // message for the server
       bs[0] = 3;
+      haveReading = false;
       changeGPIOstatus(ERR);
     } else {
 
@@ -528,12 +543,12 @@ void initEspNow() {
 
     // Server handling
 #ifdef GAMESERVER
-#ifdef DEBUG
+/*#ifdef DEBUG
     Serial.println("===========================================================");
     Serial.println("You have mail O_O !!!");
     Serial.println("===========================================================");
     Serial.println('\n');
-#endif
+#endif*/
     // check if the message comes from the right device
     if ((mac[0] == targetMacs[currentTarget][0]) && (mac[1] == targetMacs[currentTarget][1]) && (mac[2] == targetMacs[currentTarget][2]) && (mac[3] == targetMacs[currentTarget][3]) && (mac[4] == targetMacs[currentTarget][4]) && (mac[5] == targetMacs[currentTarget][5])) {
       haveReading = true;

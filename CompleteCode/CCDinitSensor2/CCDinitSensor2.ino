@@ -20,8 +20,8 @@ extern "C" {
 
 // unwanted modes should be commented out
 #define DEBUG
-#define TARGET
-//#define GAMESERVER
+//#define TARGET
+#define GAMESERVER
 
 // Color Use Cases
 #define POWER 0     // yellow
@@ -49,6 +49,7 @@ struct __attribute__((packed)) SENSOR_DATA {
 
 // get a msg from other device
 volatile boolean haveReading = false;
+
 // set LED Pins for green,blue,rot-----------------------------------------------------------------------!
 Color LED(12, 13, 15);
 
@@ -144,7 +145,7 @@ void loop() {
   // timer for timeouts after this time (after 60 sec.)
   long gameLength = 60 * 1000;
 
-  // timer for split times
+  // timer for split times ( correct initialization follows later)
   uint16_t currentTime = 0;
 
   // transfer array for data
@@ -311,13 +312,25 @@ void loop() {
           Serial.println('\n');
 #endif
 
-          // report hit counter by led blinking
-          // blink minimal 10 times
-          for (i = 0; i <= hitCounter || i < 10; i++) {
-            changeGPIOstatus(RECV);
-            delay(200);
-            changeGPIOstatus(OUT);
-            delay(800);
+          if (hitCounter < 5) {
+            // report hit counter by led blinking
+            // blink minimal 10 times
+            for (i = 0; i <= hitCounter || i < 10; i++) {
+              changeGPIOstatus(ERR);
+              delay(200);
+              changeGPIOstatus(OUT);
+              delay(800);
+            }
+          } else
+          {
+            // report hit counter by led blinking
+            // blink minimal 10 times
+            for (i = 0; i <= hitCounter; i++) {
+              changeGPIOstatus(RECV);
+              delay(200);
+              changeGPIOstatus(OUT);
+              delay(800);
+            }
           }
 
           // in 10 sec starts new game
@@ -410,6 +423,7 @@ void loop() {
           Serial.println("===========================================================");
           Serial.println('\n');
 #endif
+          break;
         }
 
         /*
@@ -426,6 +440,7 @@ void loop() {
                 }
           #endif
         */
+
         // normal hit
         if (analogVal >= (initVal * 1.2)) {
 #ifdef DEBUG
@@ -442,14 +457,16 @@ void loop() {
           endFlag = true;
         }
       }
-      changeGPIOstatus(SEND);
-
-      //send the message
-      esp_now_send(GAMESERVER_ap_mac, bs, sizeof(sensorData));
     }
+    changeGPIOstatus(SEND);
+
+    //send the message
+    esp_now_send(GAMESERVER_ap_mac, bs, sizeof(sensorData));
   }
 #endif //end -  Target loop
 }
+
+
 
 //-------------------------------------------------------------------------------------------------------------------------
 // extra functions --------------------------------------------------------------------------------------------------------
@@ -517,16 +534,10 @@ void initEspNow() {
     Serial.println("You have mail O_O !!!");
     Serial.println("===========================================================");
     Serial.println('\n');
-#endif
-    if (initSens) {
-      if ((mac[0] == initMac[0]) && (mac[1] == initMac[1]) && (mac[2] == initMac[2]) && (mac[3] == initMac[3]) && (mac[4] == initMac[4]) && (mac[5] == initMac[5])) {
-        haveReading = true;
-      }
-    } else {
-      // check if the message comes from the right device
-      if ((mac[0] == targetMacs[currentTarget][0]) && (mac[1] == targetMacs[currentTarget][1]) && (mac[2] == targetMacs[currentTarget][2]) && (mac[3] == targetMacs[currentTarget][3]) && (mac[4] == targetMacs[currentTarget][4]) && (mac[5] == targetMacs[currentTarget][5])) {
-        haveReading = true;
-      }
+#endif*/
+    // check if the message comes from the right device
+    if ((mac[0] == targetMacs[currentTarget][0]) && (mac[1] == targetMacs[currentTarget][1]) && (mac[2] == targetMacs[currentTarget][2]) && (mac[3] == targetMacs[currentTarget][3]) && (mac[4] == targetMacs[currentTarget][4]) && (mac[5] == targetMacs[currentTarget][5])) {
+      haveReading = true;
     }
 #endif
 
@@ -534,12 +545,6 @@ void initEspNow() {
     haveReading = true;
 #endif
 
-#ifdef DEBUG
-    Serial.println("===========================================================");
-    Serial.println("end of receiving interrupt");
-    Serial.println("===========================================================");
-    Serial.println('\n');
-#endif
   });
 }
 
@@ -588,28 +593,11 @@ void scanForTargets() {
       // Save SSID, RSSI and BSSID for each device found that begins with "LG_"
       if (SSID.indexOf("LG_") == 0) {
 
-        // transfer array for data
-        uint8_t bs[sizeof(sensorData)];
+        int mac[6];
 
-        boolean endFlag = false;
-
-        if ( 6 == sscanf(BSSIDstr.c_str(), "%x:%x:%x:%x:%x:%x%c", &initMac[0], &initMac[1], &initMac[2], &initMac[3], &initMac[4], &initMac[5] ) ) {
-
-          // tell target to init sensor
-          bs[2] = 1;
-          // sends bs to the selected target
-          esp_now_send(initMac, bs, sizeof(sensorData));
-
-          while (endFlag == false) {
-            if (haveReading) {
-              haveReading = false;
-              endFlag = true;
-              if (sensorData.data[0] == 4) {
-                for (int ii = 0; ii < 6; ++ii ) {
-                  targetMacs[targetsFound][ii] = (uint8_t) initMac[ii];
-                }
-              }
-            }
+        if ( 6 == sscanf(BSSIDstr.c_str(), "%x:%x:%x:%x:%x:%x%c", &mac[0], &mac[1], &mac[2], &mac[3], &mac[4], &mac[5] ) ) {
+          for (int ii = 0; ii < 6; ++ii ) {
+            targetMacs[targetsFound][ii] = (uint8_t) mac[ii];
           }
         }
         // increase the target counter
@@ -638,9 +626,6 @@ void scanForTargets() {
       }
     }
   }
-  // finish sensor init
-  initSens = false;
-
   // clean up ram
   WiFi.scanDelete();
 }
