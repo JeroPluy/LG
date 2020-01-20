@@ -591,6 +591,8 @@ void scanForTargets() {
         // transfer array for data
         uint8_t bs[sizeof(sensorData)];
 
+        boolean endFlag = false;
+
         if ( 6 == sscanf(BSSIDstr.c_str(), "%x:%x:%x:%x:%x:%x%c", &initMac[0], &initMac[1], &initMac[2], &initMac[3], &initMac[4], &initMac[5] ) ) {
 
           // tell target to init sensor
@@ -598,12 +600,14 @@ void scanForTargets() {
           // sends bs to the selected target
           esp_now_send(initMac, bs, sizeof(sensorData));
 
-
-          if (haveReading) {
-            haveReading = false;
-            if (sensorData.data[0] == 4) {
-              for (int ii = 0; ii < 6; ++ii ) {
-                targetMacs[targetsFound][ii] = (uint8_t) initMac[ii];
+          while (endFlag == false) {
+            if (haveReading) {
+              haveReading = false;
+              endFlag = true;
+              if (sensorData.data[0] == 4) {
+                for (int ii = 0; ii < 6; ++ii ) {
+                  targetMacs[targetsFound][ii] = (uint8_t) initMac[ii];
+                }
               }
             }
           }
