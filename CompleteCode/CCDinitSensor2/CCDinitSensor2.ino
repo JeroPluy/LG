@@ -20,8 +20,8 @@ extern "C" {
 
 // unwanted modes should be commented out
 #define DEBUG
-//#define TARGET
-#define GAMESERVER
+#define TARGET
+//#define GAMESERVER
 
 // Color Use Cases
 #define POWER 0     // yellow
@@ -549,7 +549,6 @@ void initEspNow() {
 #ifdef GAMESERVER
 void scanForTargets() {
   int8_t scanResults = WiFi.scanNetworks();
-
 #ifdef DEBUG
   Serial.println("===========================================================");
   Serial.println("Scan for targets");
@@ -592,15 +591,6 @@ void scanForTargets() {
         // transfer array for data
         uint8_t bs[sizeof(sensorData)];
 
-        // marks the end of the intern loop
-        boolean endFlag = false;
-
-        //start timer var
-        long startTime = millis();
-
-        //time out var (after 5 sec. without an answer)
-        long sendTime = 5000;
-
         if ( 6 == sscanf(BSSIDstr.c_str(), "%x:%x:%x:%x:%x:%x%c", &initMac[0], &initMac[1], &initMac[2], &initMac[3], &initMac[4], &initMac[5] ) ) {
 
           // tell target to init sensor
@@ -608,41 +598,13 @@ void scanForTargets() {
           // sends bs to the selected target
           esp_now_send(initMac, bs, sizeof(sensorData));
 
-          while (endFlag == false) {
-            if (haveReading) {
-              haveReading = false;
-              if (sensorData.data[0] == 4) {
-                for (int ii = 0; ii < 6; ++ii ) {
-                  targetMacs[targetsFound][ii] = (uint8_t) initMac[ii];
-                }
-                endFlag = true;
-#ifdef DEBUG
-                Serial.println("===========================================================");
-                Serial.println("Target sensor is useable");
-                Serial.println("===========================================================");
-                Serial.println('\n');
-#endif
+
+          if (haveReading) {
+            haveReading = false;
+            if (sensorData.data[0] == 4) {
+              for (int ii = 0; ii < 6; ++ii ) {
+                targetMacs[targetsFound][ii] = (uint8_t) initMac[ii];
               }
-              // sensor is useless
-              else if (sensorData.data[0] == 3) {
-                endFlag = true;
-#ifdef DEBUG
-                Serial.println("===========================================================");
-                Serial.println("Target sensor is useless");
-                Serial.println("===========================================================");
-                Serial.println('\n');
-#endif
-              }
-            }
-            // sensor didn't answer in time
-            if ((millis() - startTime) > sendTime) {
-              endFlag = true;
-#ifdef DEBUG
-              Serial.println("===========================================================");
-              Serial.println("Target didn't answer in time");
-              Serial.println("===========================================================");
-              Serial.println('\n');
-#endif
             }
           }
         }
