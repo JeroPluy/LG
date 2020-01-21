@@ -39,6 +39,8 @@ extern "C" {
 #ifdef TARGET
 uint8_t GAMESERVER_ap_mac[]   = {0xEE, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF};
 uint8_t GAMESERVER_sta_mac[]  = {0xEC, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF};
+// init sensor val
+int initVal;
 #endif
 
 
@@ -291,9 +293,14 @@ void loop() {
           Serial.println('\n');
 #endif
 
-          // set initSens false / delete the reference in the array
+          // set initSens false
           initSens = false;
+          // delete the reference in the array
           bs[3] = 0;
+          // reset potentials
+          potentialTargets = 0;
+          // reset next Targe
+          nextTarget = 0;
 
           state ++;
         }
@@ -471,6 +478,13 @@ void loop() {
 
           // in 10 sec starts new game
           delay(10000);//---------------------------------------------------------------------------------------!
+#ifdef DEBUG
+          Serial.println("===========================================================");
+          Serial.println("Restart the Game :D");
+          Serial.println("===========================================================");
+          Serial.println('\n');
+#endif
+
           state = 0;
         }
         break;
@@ -501,7 +515,6 @@ void loop() {
   // connection array
   uint8_t bs[sizeof(sensorData)];
 
- 
 
   // value of the LDR before hit while game
   int analogVal = 0;
@@ -524,6 +537,8 @@ void loop() {
     Serial.print("activated for ");
     Serial.print(activeTime);
     Serial.println(" ms");
+    Serial.print("Sensor initialization : ");
+    Serial.println(initSens);
     Serial.println("===========================================================");
     Serial.println('\n');
 #endif
@@ -545,13 +560,15 @@ void loop() {
         bs[0] = 3;
 #ifdef DEBUG
         Serial.println("===========================================================");
+        Serial.print("init VAL: ");
+        Serial.println(initVal);
+        Serial.print("120% VAL: ");
         Serial.println(initVal * 1.2);
         Serial.println("===========================================================");
         Serial.println('\n');
 #endif
       }
     } else {
-
       changeGPIOstatus(WAIT);
 
       // accessable as target (inner loop)
@@ -579,33 +596,20 @@ void loop() {
           break;
         }
 
-        /*
-          #ifdef DEBUG
-                //simulate hits for long active times
-                if (millis() - startTime > 4000) {
-                  // write a hit in the connection array
-                  bs[0] = 1;
-                  endFlag = true;
-                  Serial.println("===========================================================");
-                  Serial.println("HIT");
-                  Serial.println("===========================================================");
-                  Serial.println('\n');
-                }
-          #endif
-        */
-        
-/*        
-        Serial.println("===========================================================");
-        Serial.print("init VAL: ");
-        Serial.println(initVal);
-        Serial.println("-----------------------------------------------------------");
-        Serial.print("120% VAL: ");
-        Serial.println(initVal * 1.2);
-        Serial.println("-----------------------------------------------------------");
-        Serial.print("actuell VAL: ");
-        Serial.println(analogVal);
-        Serial.println("===========================================================");
-*/
+
+#ifdef DEBUG
+        //simulate hits for long active times
+        if (millis() - startTime > 4000) {
+          // write a hit in the connection array
+          bs[0] = 1;
+          endFlag = true;
+          Serial.println("===========================================================");
+          Serial.println("HIT");
+          Serial.println("===========================================================");
+          Serial.println('\n');
+        }
+#endif
+
 
         // normal hit
         if (analogVal >= (initVal * 1.2)) {
@@ -798,6 +802,13 @@ void scanForTargets() {
   // clean up ram
   WiFi.scanDelete();
   initSens = true;
+#ifdef DEBUG
+  Serial.println("===============================================");
+  Serial.println("End of scan methode");
+  Serial.print("Potential Targets : ");
+  Serial.println(potentialTargets);
+  Serial.println("===============================================");
+#endif
 }
 #endif
 
