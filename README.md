@@ -14,11 +14,11 @@ It's like lasertag on fixed targets with a real laser.
    - ESP8266 ([How to add libraries](https://randomnerdtutorials.com/how-to-install-esp8266-board-arduino-ide/))
    - Color   &nbsp; &nbsp; &nbsp;([How to add .zip - libraries](https://www.arduino.cc/en/Guide/Libraries))
    
-3. Connect the server host ESP8266.
+3. Connect the ESP8266 that will be the server host.
 
-4. Open [GetServerMac]()
+4. Open the [GetServerMac]()-program in the IDE
 
-5. Upload the program. (`Ctrl + U`)
+5. Upload the program to the ESP. (`Ctrl + U`)
 
 6. Copy the AP MAC and the STA MAC from the console in the mac.txt.
 
