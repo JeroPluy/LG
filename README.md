@@ -11,7 +11,9 @@ It's like laser tag on fixed targets with a real laser.
    - ESP8266 ([How to add libraries](https://randomnerdtutorials.com/how-to-install-esp8266-board-arduino-ide/))
    - Color   &nbsp; &nbsp; &nbsp;([How to add .zip - libraries](https://www.arduino.cc/en/Guide/Libraries))
 3. Connect the ESP8266.
+
 4.1 **Open CompleteCode (Code editing necessary)**
+
 4.1.1 Select the role for the ESP :  (Code row : )
 ```
 // unwanted modes should be commented out
