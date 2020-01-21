@@ -7,18 +7,21 @@ It's like laser tag on fixed targets with a real laser.
 ## Game Instructions
 #### Installing Instructions
 1. Download the [Arduino IDE](https://www.arduino.cc/en/main/software) and install it. ([Install Guide](https://www.arduino.cc/en/Guide/HomePage))
-2. Connect the board.
-3. Open the program.
-## Open CompleteCode (Code editing necessary)
-4. Select the role for the ESP :  (Code row : )
+2. Add the needed libraries. 
+   - ESP8266 ([How to add libraries](https://randomnerdtutorials.com/how-to-install-esp8266-board-arduino-ide/))
+   - Color   &nbsp; &nbsp; &nbsp;([How to add .zip - libraries](https://www.arduino.cc/en/Guide/Libraries))
+3. Connect the ESP8266.
+
+##### Open CompleteCode (Code editing necessary)
+4.1 Select the role for the ESP :  (Code row : )
 ```
 // unwanted modes should be commented out
 #define DEBUG
 #define TARGET
 #define GAMESERVER
 ```
-. Add the needed libraries. 
-   - ESP8266 ([How to add libraries](https://randomnerdtutorials.com/how-to-install-esp8266-board-arduino-ide/))
-   - Color   &nbsp; &nbsp; &nbsp;([How to add .zip - libraries](https://www.arduino.cc/en/Guide/Libraries))
+##### Open Gameserver
+##### Open Target
+
 . Upload the program (`Ctrl + U`)
 6
