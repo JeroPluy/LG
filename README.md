@@ -12,9 +12,9 @@ It's like lasertag on fixed targets with a real laser.
    - Color   &nbsp; &nbsp; &nbsp;([How to add .zip - libraries](https://www.arduino.cc/en/Guide/Libraries))
 3. Connect the ESP8266.
 
-  4. 1 **Open CompleteCode (Code editing necessary)**  
+  4. 1. **Open CompleteCode (Code editing necessary)**  
      
-   `(Code row : 24)`
+   `(Code row : 25)`
    
 ```
 // unwanted modes should be commented out
@@ -23,7 +23,7 @@ It's like lasertag on fixed targets with a real laser.
 #define GAMESERVER
 ```    
 
-4. 2 **Open program for this ESP (Gamerserver / Target)**
+4. 2. **Open program for this ESP (Gamerserver / Target)**
 
 5. Upload the program. (`Ctrl + U`)
 6. Installation for this ESP is ready. 
