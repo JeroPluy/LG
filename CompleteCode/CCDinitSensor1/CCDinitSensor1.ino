@@ -50,8 +50,8 @@ struct __attribute__((packed)) SENSOR_DATA {
 // get a msg from other device
 volatile boolean haveReading = false;
 
-// set LED Pins for green,blue,rot-----------------------------------------------------------------------!
-Color LED(12, 13, 15);
+// set LED Pins for rot,green,blue
+Color LED(15, 12, 13);
 
 // define login data
 #define BASE_SSID "LG_"

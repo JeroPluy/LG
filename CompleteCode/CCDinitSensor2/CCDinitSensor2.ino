@@ -20,8 +20,8 @@ extern "C" {
 
 // unwanted modes should be commented out
 #define DEBUG
-#define TARGET
-//#define GAMESERVER
+//#define TARGET
+#define GAMESERVER
 
 // Color Use Cases
 #define POWER 0     // yellow
@@ -55,8 +55,8 @@ volatile boolean haveReading = false;
 // sensor init input msg
 volatile boolean initSens = false;
 
-// set LED Pins for green,blue,rot-----------------------------------------------------------------------!
-Color LED(12, 13, 15);
+// set LED Pins for rot,green,blue
+Color LED(15, 12, 13);
 
 // define login data
 #define BASE_SSID "LG_"
