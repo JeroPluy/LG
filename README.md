@@ -14,7 +14,7 @@ It's like lasertag on fixed targets with a real laser.
 
 4.1 **Open CompleteCode (Code editing necessary)**  
      
-`(Code row : 25)`
+`(Code row : 24)`
 ```
 // unwanted modes should be commented out
 #define DEBUG
@@ -24,5 +24,12 @@ It's like lasertag on fixed targets with a real laser.
 4.2 **Open program for this ESP (Gamerserver / Target)**
 
 5. Upload the program. (`Ctrl + U`)
-6. Have Fun. :D
+6. Installation for this ESP is ready. 
+(_You have to do this for every target and for one server_)
+
+
+## Side Notes
+* If you want some printouts on the console, use a \*DV (_DebugVersion_)
+* The maimum number of targets per game is now limited to 40 but I haven't tried more than 14 (but it should work with more too) 
+
 
