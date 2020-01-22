@@ -2,7 +2,7 @@
 
 1. Open CompleteCodeDV with the Arduino IDE
 
-2. Change server mac addresses for the targets (**not** copy paste complete mac.txt) `(Code row : 71 - 72)`
+2. Change the server Mac addresses for the targets (**don't** copy paste complete mac.txt) `(Code row : 71 - 72)`
 
     ```
     // server esp mac addresses for the targets
@@ -27,11 +27,11 @@
       ``` 
       
 
-3. Upload the program to the server ESP. (`Ctrl + U`)
+3. Upload the program to the *server* ESP. (`Ctrl + U`)
 
 4. Connect the ESP8266 that will be one of the targets.
 
-5. Comment out GAMESERVER and delete the // before the TARGET. (`Row: 28`)
+5. Comment out GAMESERVER and delete the `//` before the `#define TARGET`. (`Row: 28`)
 
       ```
       // unwanted modes should be commented out
@@ -39,7 +39,12 @@
       #define TARGET
       //#define GAMESERVER
       ``` 
-6. Upload the program to the target ESP. (`Ctrl + U`)
+6. Upload the program to the *target* ESP. (`Ctrl + U`)
 
-7. Connect the other targets and upload the program. No code adjustments are required.
- 
+7. Connect the other targets to your PC one after the other and upload the program. No code adjustments are required.
+
+#### Installation complete
+
+### Game process 
+see [LG-README.md](https://github.com/JeroPlay/LG/edit/master/README.md)
+
