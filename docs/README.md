@@ -10,10 +10,10 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
 
 ### Table of Contents
 
-   1. [Installing Instructions]()
-   2. [The 2 Versions]()
-   3. [The project]()
-   4. [Creater]()
+   1. [Installing Instructions](https://github.com/JeroPlay/LG/blob/master/docs/README.md#installing-instructions)
+   2. [The 2 versions](https://github.com/JeroPlay/LG/blob/master/docs/README.md#the-2-versions)
+   3. [The project](https://github.com/JeroPlay/LG/blob/master/docs/README.md#the-project)
+   4. [about the creater](https://github.com/JeroPlay/LG/blob/master/docs/README.md#about-the-creater)
 
 #### Installing Instructions
 
@@ -53,6 +53,10 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
       
       
  #### The 2 versions
+ 
+ #### The project
+  
+ #### about the creater
       
 
 ## Side Notes
