@@ -1,23 +1,23 @@
 #### Installing Instructions
 
-1. Change server mac addresses for the targets (**not** copy paste complete mac.txt)
-       
-       ```
-           // server esp mac addresses for the targets
-          #ifdef TARGET
+1. Open CompleteCodeDV with the Arduino IDE
 
-           uint8_t GAMESERVER_ap_mac[]   = {0xEE, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF}; 
-           uint8_t GAMESERVER_sta_mac[]  = {0xEC, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF};
+2. Change server mac addresses for the targets (**not** copy paste complete mac.txt) `(Code row : 71 - 72)`
 
-           // init sensor val
-           int initVal;
+    ```
+    // server esp mac addresses for the targets
+    #ifdef TARGET
 
-           #endif
-        ```
+    uint8_t GAMESERVER_ap_mac[]   = {0xEE, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF}; 
+    uint8_t GAMESERVER_sta_mac[]  = {0xEC, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF};
+
+    // init sensor val
+    int initVal;
+
+    #endif
+    ```
         
-2. Open CompleteCodeDV  
-  
-    - Comment out TARGET
+3. Comment out TARGET (`Row: 27`)
    
       ```
       // unwanted modes should be commented out
@@ -27,21 +27,19 @@
       ``` 
       
 
-5. Upload the program the first Time to get. (`Ctrl + U`)
+3. Upload the program to the server ESP. (`Ctrl + U`)
 
-6. Open the 
+4. Connect the ESP8266 that will be one of the targets.
 
-`(Code row : 68)`
-   
-```
-// server esp mac addresses for the targets
-#ifdef TARGET
+5. Comment out GAMESERVER and delete the // before the TARGET. (`Row: 28`)
 
-uint8_t GAMESERVER_ap_mac[]   = {0xEE, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF};
-uint8_t GAMESERVER_sta_mac[]  = {0xEC, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF};
-```    
+      ```
+      // unwanted modes should be commented out
+      #define DEBUG
+      #define TARGET
+      //#define GAMESERVER
+      ``` 
+6. Upload the program to the target ESP. (`Ctrl + U`)
 
-4. 2. **Open program for this ESP (Gamerserver / Target)**
-
-6. Installation for this ESP is ready. 
-(_You have to do this for every target and for one server_)
+7. Connect the other targets and upload the program. No code adjustments are required.
+ 
