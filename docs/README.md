@@ -51,13 +51,15 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
       - [AllInOne](AllInOneREADME.md)     
       - [Server-Target](Server-TargetREADME.md)
       
+      * If you want some printouts on the console, use the \*DV (_DebugVersion_)
+      
       
  ### The 2 versions
  
  The project includes two versions of code. The first one is the complete code in on .ino file so you have everything concentrated. 
- For reversengineer this version is pretty confusing and it is just for a fast an esay import and installation.
- The second code is separated in two programs - the server program and the target program. It is easier to understand and to reversengineer.
- It is up to you which version you want to use. Both have the exact same program sequences.
+ For reverse-engineer, this version is pretty confusing and it is just for a fast and easy import and installation.
+ The second code is separated into two programs - the server program and the target program. It is easier to understand and to reverse-engineer.
+ It is up to you which version you want to use. Both have the same program sequences.
  
  VERSION 1 : [AllInOne](../Game/AllInOne)
  
@@ -69,7 +71,7 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
       
 
 ## Side Notes
-* If you want some printouts on the console, use a \*DV (_DebugVersion_)
-* The maimum number of targets per game is now limited to 40 but I haven't tried more than 14 (but it should work with more too) 
+* If you want some printouts on the console, use the \*DV (_DebugVersion_)
+* The maximum number of targets per game is now limited to 40 but I haven't tried more than 14 (but it should work with more too) 
 
 
