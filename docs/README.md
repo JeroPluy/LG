@@ -15,7 +15,7 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
    3. [The project](https://github.com/JeroPlay/LG/blob/master/docs/README.md#the-project)
    4. [about the creater](https://github.com/JeroPlay/LG/blob/master/docs/README.md#about-the-creater)
 
-#### Installing Instructions
+### Installing Instructions
 
 1. Download the [Arduino IDE](https://www.arduino.cc/en/main/software) and install it. ([Install Guide](https://www.arduino.cc/en/Guide/HomePage))
 
@@ -52,11 +52,20 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
       - [Server-Target]()
       
       
- #### The 2 versions
+ ### The 2 versions
  
- #### The project
+ The project includes two versions of code. The first one is the complete code in on .ino file so you have everything concentrated. 
+ For reversengineer this version is pretty confusing and it is just for a fast an esay import and installation.
+ The second code is separated in two programs - the server program and the target program. It is easier to understand and to reversengineer.
+ It is up to you which version you want to use. Both have the exact same program sequences.
+ 
+ VERSION 1 : [AllInOne]()
+ 
+ VERSION 2 : [Server-Target]()
+ 
+ ### The project
   
- #### about the creater
+ ### about the creater
       
 
 ## Side Notes
