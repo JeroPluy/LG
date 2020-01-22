@@ -13,7 +13,7 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
    1. [Installing Instructions](README.md#installing-instructions)
    2. [The 2 versions](README.md#the-2-versions)
    3. [The project](README.md#the-project)
-   4. [about the creater](README.md#about-the-creater)
+   4. [About the creater](README.md#about-the-creater)
 
 ### Installing Instructions
 
@@ -67,7 +67,7 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
  
  ### The project
   
- ### about the creater
+ ### About the creater
       
 
 ## Side Notes
