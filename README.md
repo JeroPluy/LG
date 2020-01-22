@@ -16,11 +16,13 @@ It's like lasertag on fixed targets with a real laser.
    
 3. Connect the ESP8266 that will be the server host.
 
+   -![Settings in Tools](https://github.com/JeroPlay/LG/blob/master/SecretFiles/Settings%20for%20Tools.png)
+
 4. Open the [GetServerMac]()-program in the IDE
 
 5. Upload the program to the ESP. (`Ctrl + U`)
 
-6. Copy the AP MAC and the STA MAC from the console in the mac.txt.
+6. Copy the AP MAC and the STA MAC from the console to the mac.txt file.
 
   ```
   Console Output Example:
