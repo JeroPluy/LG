@@ -1,2 +1,4 @@
-# ignore secret files
-SecretFiles/*
+$ git status
+
+    # Untracked files:
+    $ cat SecretFiles/*
