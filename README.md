@@ -36,6 +36,19 @@ It's like lasertag on fixed targets with a real laser.
  ===========================================================
   ```
 
+  7. Change server mac addresses for the targets
+      ```   
+         // server esp mac addresses for the targets
+         #ifdef TARGET
+
+         uint8_t GAMESERVER_ap_mac[]   = {0xEE, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF};
+         uint8_t GAMESERVER_sta_mac[]  = {0xEC, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF};
+
+         // init sensor val
+         int initVal;
+
+         #endif
+      ```
   7. 1. **Open CompleteCodeDV**  
      
   - Comment out TARGET
