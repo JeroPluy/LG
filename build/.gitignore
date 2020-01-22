@@ -1,2 +1,2 @@
-#Ignore any file named .png
-*.png
+#ignore secret files
+dir_to_ignore/SecretFiles
