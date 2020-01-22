@@ -51,7 +51,7 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
       - [AllInOne](AllInOneREADME.md)     
       - [Server-Target](Server-TargetREADME.md)
       
-      * If you want some printouts on the console, use the \*DV (_DebugVersion_)
+         * If you want some printouts on the console, use the \*DV (_DebugVersion_)
       
       
  ### The 2 versions
