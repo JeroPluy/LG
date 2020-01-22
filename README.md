@@ -6,26 +6,60 @@ It's like lasertag on fixed targets with a real laser.
 
 ## Game Instructions
 #### Installing Instructions
+
 1. Download the [Arduino IDE](https://www.arduino.cc/en/main/software) and install it. ([Install Guide](https://www.arduino.cc/en/Guide/HomePage))
+
 2. Add the needed libraries. 
+
    - ESP8266 ([How to add libraries](https://randomnerdtutorials.com/how-to-install-esp8266-board-arduino-ide/))
    - Color   &nbsp; &nbsp; &nbsp;([How to add .zip - libraries](https://www.arduino.cc/en/Guide/Libraries))
-3. Connect the ESP8266.
+   
+3. Connect the ESP8266 that will be the server host.
 
-  4. 1 **Open CompleteCode (Code editing necessary)**  
+4. Open the [GetServerMac]()-program in the IDE
+
+5. Upload the program to the ESP. (`Ctrl + U`)
+
+6. Copy the AP MAC and the STA MAC from the console in the mac.txt.
+
+  ```
+  Console Output Example:
+ ===========================================================
+ Gameserver
+ -----------------------------------------------------------
+ This node AP mac:  AF:FA:BC:02:E6:CD
+ This node STA mac: AC:FA:BC:02:E6:CD
+ ===========================================================
+  ```
+
+  7. 1. **Open CompleteCodeDV**  
      
-   `(Code row : 24)`
+  - Comment out TARGET
    
 ```
 // unwanted modes should be commented out
 #define DEBUG
-#define TARGET
+//#define TARGET
 #define GAMESERVER
 ```    
+7. 2. **Open GamerserverDV**
 
-4. 2 **Open program for this ESP (Gamerserver / Target)**
+5. Upload the program the first Time to get. (`Ctrl + U`)
 
-5. Upload the program. (`Ctrl + U`)
+6. Open the 
+
+`(Code row : 68)`
+   
+```
+// server esp mac addresses for the targets
+#ifdef TARGET
+
+uint8_t GAMESERVER_ap_mac[]   = {0xEE, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF};
+uint8_t GAMESERVER_sta_mac[]  = {0xEC, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF};
+```    
+
+4. 2. **Open program for this ESP (Gamerserver / Target)**
+
 6. Installation for this ESP is ready. 
 (_You have to do this for every target and for one server_)
 
