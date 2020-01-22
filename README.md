@@ -26,16 +26,20 @@ It's like lasertag on fixed targets with a real laser.
 
 6. Copy the AP MAC and the STA MAC from the console to the mac.txt file.
 
-  ```
-  Console Output Example:
- ===========================================================
- Gameserver
- -----------------------------------------------------------
- This node AP mac:  AF:FA:BC:02:E6:CD
- This node STA mac: AC:FA:BC:02:E6:CD
- ===========================================================
-  ```
-
+   ```
+   Console Output Example:
+   ===========================================================
+   Gameserver
+   -----------------------------------------------------------
+   This node AP mac:  AF:FA:BC:02:E6:CD
+   This node STA mac: AC:FA:BC:02:E6:CD
+   ===========================================================
+   ```
+  7. Look in the special installation instructions for the variants
+  
+      - [AllInOne]()     
+      - [ServerTarget]()
+      
   7. Change server mac addresses for the targets
       ```   
          // server esp mac addresses for the targets
