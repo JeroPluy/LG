@@ -61,9 +61,9 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
  The second code is separated into two programs - the server program and the target program. It is easier to understand and to reverse-engineer.
  It is up to you which version you want to use. Both have the same program sequences.
  
- VERSION 1 : [AllInOne](../Game/AllInOne)
+ VERSION 1 : [LG_AllInOne](../Game/LG_AllInOne)
  
- VERSION 2 : [Server-Target](../Game/Server-Target)
+ VERSION 2 : [LG_Server_Target](../Game/LG_Server_Target)
  
  ### The project
   
