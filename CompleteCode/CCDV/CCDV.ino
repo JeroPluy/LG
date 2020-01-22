@@ -1,27 +1,33 @@
 /**
-   Write a description pls
+ *  A game based on ESP8266 – Witty Cloud Moduls, ESP-Now and a laser pointer.
+ *  The goal of the game is to hit the blinking ESPs with the laser gun and reach a high score of hits.
+ *  It's like lasertag on fixed targets with a real laser.
+ *  This is the full code version. You need to comment out the unwanted modes to get a working program.
+ *
+ *  @author Jero A
+ *  @version 1.0
+ *  @date 16.01.2020
+ */
 
-   @author Jero A
-   @version 1.0
-   @date 16.01.2020
-*/
-
+//_________________________________________________________________________________________________________________________________
 
 // for LED control
 #include <Color.h>
 
 #include <ESP8266WiFi.h>
-//#include <credentials.h>
 extern "C" {
 #include "user_interface.h"
 #include <espnow.h>
 }
 
+//_________________________________________________________________________________________________________________________________
 
 // unwanted modes should be commented out
 #define DEBUG
 #define TARGET
 //#define GAMESERVER
+
+//_________________________________________________________________________________________________________________________________
 
 // Color Use Cases
 #define POWER 0     // yellow
@@ -35,15 +41,12 @@ extern "C" {
 
 
 #define WIFI_CHANNEL 1
-// server esp mac addresses for the targets
-#ifdef TARGET
-uint8_t GAMESERVER_ap_mac[]   = {0xEE, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF};
-uint8_t GAMESERVER_sta_mac[]  = {0xEC, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF};
 
-// init sensor val
-int initVal;
-#endif
+// define login data
+#define BASE_SSID "LG_"
+#define PSK  "TestTest!"
 
+//_________________________________________________________________________________________________________________________________
 
 // keep in sync with ESP_NOW sensor struct
 struct __attribute__((packed)) SENSOR_DATA {
@@ -59,26 +62,36 @@ volatile boolean initSens = false;
 // set LED Pins for rot,green,blue
 Color LED(15, 12, 13);
 
-// define login data
-#define BASE_SSID "LG_"
-#define PSK  "TestTest!"
+// server esp mac addresses for the targets
+#ifdef TARGET
+
+uint8_t GAMESERVER_ap_mac[]   = {0xEE, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF};
+uint8_t GAMESERVER_sta_mac[]  = {0xEC, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF};
+
+// init sensor val
+int initVal;
+
+#endif
 
 // target administration
 #ifdef GAMESERVER
+
 // counter var
 uint8_t potentialTargets = 0;
 // counter var
 uint8_t targetsFound = 0;
+
 // arrayy list for saving target macs
 uint8_t potentialTargetsMacs[40][6];
 // 40 macs possible to connect
 uint8_t targetMacs[40][6];
 
 uint8_t currentTarget = 0;
+
 #endif
 
 
-//-------------------------------------------------------------------------------------------------------------------------
+//_________________________________________________________________________________________________________________________________
 
 void setup() {
 
@@ -125,7 +138,7 @@ void setup() {
 }
 
 
-//-------------------------------------------------------------------------------------------------------------------------
+//_________________________________________________________________________________________________________________________________
 
 void loop() {
 #ifdef GAMESERVER
@@ -172,6 +185,7 @@ void loop() {
 
 
     switch (state) {
+      
       //search for targets
       case 0:
         targetsFound = 0;
@@ -388,6 +402,7 @@ void loop() {
         changeGPIOstatus(WAIT);
         break;
 
+
       // analyses the answer of the target
       case 6:
 
@@ -499,7 +514,7 @@ void loop() {
   }
 #endif //end -  Server loop
 
-  //________________________________________________________________________________________
+//___________________________________________________________________________________________________________
 
 #ifdef TARGET
 
