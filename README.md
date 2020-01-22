@@ -16,6 +16,8 @@ It's like lasertag on fixed targets with a real laser.
    
 3. Connect the ESP8266 that will be the server host.
 
+   - Make sure your tool settings are correct
+   
    -![Settings in Tools](https://github.com/JeroPlay/LG/blob/master/SecretFiles/Settings%20for%20Tools.png)
 
 4. Open the [GetServerMac]()-program in the IDE
