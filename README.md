@@ -23,6 +23,7 @@ It's like lasertag on fixed targets with a real laser.
 6. Copy the AP MAC and the STA MAC from the console in the mac.txt.
 
   ```
+  Console Output Example:
  ===========================================================
  Gameserver
  -----------------------------------------------------------
