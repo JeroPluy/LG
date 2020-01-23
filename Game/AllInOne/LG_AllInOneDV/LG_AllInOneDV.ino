@@ -1,14 +1,14 @@
 /**
-  *   A game based on ESP8266 – Witty Cloud Moduls, ESP-Now and a laser pointer.
-  *   The goal of the game is to hit the blinking ESPs with the laser gun and reach a high score of hits.
-  *   It's like lasertag on fixed targets with a real laser.
-  *   This is the full code version. You need to comment out the unwanted modes to get a working program.
-  *
-  *
-  *   @author Jero A
-  *   @version 1.0
-  *   @date 16.01.2020
-  */
+      A game based on ESP8266 – Witty Cloud Moduls, ESP-Now and a laser pointer.
+      The goal of the game is to hit the blinking ESPs with the laser gun and reach a high score of hits.
+      It's like lasertag on fixed targets with a real laser.
+      This is the full code version. You need to comment out the unwanted modes to get a working program.
+
+
+      @author Jero A
+      @version 1.0
+      @date 16.01.2020
+*/
 
 //___Includes___________________________________________________________________________________________________________________
 
@@ -25,8 +25,8 @@ extern "C" {
 
 // unwanted modes should be commented out
 #define DEBUG
-#define TARGET
-//#define GAMESERVER
+//#define TARGET
+#define GAMESERVER
 
 //___defines____________________________________________________________________________________________________________________
 
@@ -543,8 +543,19 @@ void loop() {
   int analogVal = 0;
 
   //----------------------------------------------------------------------------------------------------------------------------
-
-  changeGPIOstatus(RECV);
+  
+  // standard led status if it isn't connected
+  if (bs[0] == 4) {
+    changeGPIOstatus(ERR);
+  }
+#ifdef DEBUG
+  else if (1) {
+    changeGPIOstatus(RECV);
+  }
+#endif
+  else {
+    changeGPIOstatus(OUT);
+  }
 
   // if the target gets a message from the server
   if (haveReading) {
