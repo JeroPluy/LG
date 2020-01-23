@@ -6,14 +6,14 @@ It's like Laser Tag on fixed targets with a real laser.
 If you ever want to shoot with a laser pointer at an actual target, this game is a cheap version to try this out and learn more about Mc's and ESP-Now.
 
 
-## Game Instructions
 
 ### Table of Contents
 
    1. [Installing Instructions](README.md#installing-instructions)
    2. [The 2 versions](README.md#the-2-versions)
-   3. [The project](README.md#the-project)
-   4. [About the creater](README.md#about-the-creater)
+   3. [Game Instructions](README.md#game-instructions)
+   4. [The project](README.md#the-project)
+   5. [About the creater](README.md#about-the-creater)
 
 ### Installing Instructions
 
@@ -64,6 +64,8 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
  VERSION 1 : [LG_AllInOne](../Game/LG_AllInOne)
  
  VERSION 2 : [LG_Server_Target](../Game/LG_Server_Target)
+ 
+ ### The project
  
  ### The project
   
