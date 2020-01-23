@@ -1,13 +1,14 @@
 /**
- *  A game based on ESP8266 – Witty Cloud Moduls, ESP-Now and a laser pointer.
- *  The goal of the game is to hit the blinking ESPs with the laser gun and reach a high score of hits.
- *  It's like lasertag on fixed targets with a real laser.
- *  This is the full code version. You need to comment out the unwanted modes to get a working program.
- *
- *  @author Jero A
- *  @version 1.0
- *  @date 16.01.2020
- */
+  *  A game based on ESP8266 – Witty Cloud Moduls, ESP-Now and a laser pointer.
+  *  The goal of the game is to hit the blinking ESPs with the laser gun and reach a high score of hits.
+  *  It's like lasertag on fixed targets with a real laser.
+  *  This is the full code version. You need to comment out the unwanted modes to get a working program.
+  *
+  *
+  *  @author Jero A
+  *  @version 1.0
+  *  @date 16.01.2020
+  */
 
 //___Includes______________________________________________________________________________________________________________________
 
@@ -182,8 +183,8 @@ void loop() {
   // copy all data from bs to sensorData
   memcpy(bs, &sensorData, sizeof(sensorData));
 
-//---------------------------------------------------------------------------------------------------------------------------------
-  
+  //---------------------------------------------------------------------------------------------------------------------------------
+
   while (true) {
     // Need some delay for watchdog feeding in loop
     delay(1);
@@ -191,8 +192,8 @@ void loop() {
 
     switch (state) {
 
-//---------------------------------------------------------------------------------------------------------------------------------      
-      
+      //---------------------------------------------------------------------------------------------------------------------------------
+
       //search for targets
       case 0:
         targetsFound = 0;
@@ -247,7 +248,7 @@ void loop() {
         }
         break;
 
-//---------------------------------------------------------------------------------------------------------------------------------
+      //---------------------------------------------------------------------------------------------------------------------------------
 
       // get the result of the sensor test from the target
       case 2:
@@ -299,7 +300,7 @@ void loop() {
         Serial.flush();
         break;
 
-//---------------------------------------------------------------------------------------------------------------------------------
+      //---------------------------------------------------------------------------------------------------------------------------------
 
       // next Target for sensor test
       case 3:
@@ -328,7 +329,7 @@ void loop() {
         }
         break;
 
-//---------------------------------------------------------------------------------------------------------------------------------
+      //---------------------------------------------------------------------------------------------------------------------------------
 
       // shows how many targets you found
       case 4:
@@ -370,7 +371,7 @@ void loop() {
         }
         break;
 
-//---------------------------------------------------------------------------------------------------------------------------------
+      //---------------------------------------------------------------------------------------------------------------------------------
 
       // selects a random target from the target list and transmits the response time (currentTime)
       // the target knows what to do
@@ -413,7 +414,7 @@ void loop() {
         changeGPIOstatus(WAIT);
         break;
 
-//---------------------------------------------------------------------------------------------------------------------------------
+      //---------------------------------------------------------------------------------------------------------------------------------
 
       // analyses the answer of the target
       case 6:
@@ -463,7 +464,6 @@ void loop() {
 #endif
 
           changeGPIOstatus(ERR);
-          //delay(10000);---------------------------------------------------------------------------------------------!
 
           //reaches the end
           state = 7;
@@ -480,16 +480,12 @@ void loop() {
           Serial.println("===========================================================");
           Serial.println('\n');
 #endif
+          // visual game over
+          rainbowEnd();
 
-          if (hitCounter < 5) {
-            // report hit counter by led blinking
-            // blink minimal 10 times
-            for (i = 0; i <= hitCounter || i < 10; i++) {
-              changeGPIOstatus(ERR);
-              delay(200);
-              changeGPIOstatus(OUT);
-              delay(800);
-            }
+          if (hitCounter = 0) {
+            // no hits reproted
+            changeGPIOstatus(ERR);
           } else
           {
             // report hit counter by led blinking
@@ -503,7 +499,7 @@ void loop() {
           }
 
           // in 10 sec starts new game
-          delay(10000);//---------------------------------------------------------------------------------------!
+          delay(10000);
 #ifdef DEBUG
           Serial.println("===========================================================");
           Serial.println("Restart the Game :D");
@@ -515,7 +511,7 @@ void loop() {
         }
         break;
 
-//---------------------------------------------------------------------------------------------------------------------------------
+      //---------------------------------------------------------------------------------------------------------------------------------
 
       // connect to the next target
       case 7:
@@ -527,7 +523,7 @@ void loop() {
   }
 #endif //end -  Server loop
 
-//___target_loop___________________________________________________________________________________________________________________
+  //___target_loop___________________________________________________________________________________________________________________
 
 #ifdef TARGET
 
@@ -546,7 +542,7 @@ void loop() {
   // value of the LDR before hit while game
   int analogVal = 0;
 
-//---------------------------------------------------------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------------------------------------------------------------
 
   changeGPIOstatus(RECV);
 
@@ -598,10 +594,10 @@ void loop() {
 #endif
       }
 
-//---------------------------------------------------------------------------------------------------------------------------------
-      
+      //---------------------------------------------------------------------------------------------------------------------------------
+
     } else {
-      
+
       changeGPIOstatus(WAIT);
 
       // accessable as target (inner loop)
@@ -662,8 +658,8 @@ void loop() {
         }
       }
     }
-    
-//---------------------------------------------------------------------------------------------------------------------------------
+
+    //---------------------------------------------------------------------------------------------------------------------------------
 
     changeGPIOstatus(SEND);
 
@@ -735,12 +731,22 @@ void initEspNow() {
 #ifdef GAMESERVER
 
     if (initSens == true) {
-      if ((mac[0] == potentialTargetsMacs[currentTarget][0]) && (mac[1] == potentialTargetsMacs[currentTarget][1]) && (mac[2] == potentialTargetsMacs[currentTarget][2]) && (mac[3] == potentialTargetsMacs[currentTarget][3]) && (mac[4] == potentialTargetsMacs[currentTarget][4]) && (mac[5] == potentialTargetsMacs[currentTarget][5])) {
+      if ((mac[0] == potentialTargetsMacs[currentTarget][0])
+          && (mac[1] == potentialTargetsMacs[currentTarget][1])
+          && (mac[2] == potentialTargetsMacs[currentTarget][2])
+          && (mac[3] == potentialTargetsMacs[currentTarget][3])
+          && (mac[4] == potentialTargetsMacs[currentTarget][4])
+          && (mac[5] == potentialTargetsMacs[currentTarget][5])) {
         haveReading = true;
       }
     } else {
       // check if the message comes from the right device
-      if ((mac[0] == targetMacs[currentTarget][0]) && (mac[1] == targetMacs[currentTarget][1]) && (mac[2] == targetMacs[currentTarget][2]) && (mac[3] == targetMacs[currentTarget][3]) && (mac[4] == targetMacs[currentTarget][4]) && (mac[5] == targetMacs[currentTarget][5])) {
+      if ((mac[0] == targetMacs[currentTarget][0])
+          && (mac[1] == targetMacs[currentTarget][1])
+          && (mac[2] == targetMacs[currentTarget][2])
+          && (mac[3] == targetMacs[currentTarget][3])
+          && (mac[4] == targetMacs[currentTarget][4])
+          && (mac[5] == targetMacs[currentTarget][5])) {
         haveReading = true;
       }
     }
@@ -911,4 +917,22 @@ void changeGPIOstatus(uint8_t state) {
     case 7: LED.black();    break;
   }
 }
+
+//____Game_over____________________________________________________________________________________________________________________
+
+void rainbowEnd() {
+  LED.red();
+  delay(800);
+  LED.yellow();
+  delay(800);
+  LED.green();
+  delay(800);
+  LED.cyan();
+  delay(800);
+  LED.blue();
+  delay(800);
+  LED.violette();
+  delay(800);
+}
+
 //_________________________________________________________________________________________________________________________________

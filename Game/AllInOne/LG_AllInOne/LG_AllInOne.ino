@@ -1,15 +1,13 @@
 /**
- *   A game based on ESP8266 – Witty Cloud Modules, ESP-Now, and a laser pointer.
- *   The goal of the game is to hit the flashing ESPs with the laser gun and achieve a high hit rate.
- *   It's like Laser Tag on fixed targets with a real laser.
- *   This is the program for the target ESPs. Please initialize it for all ESPs that you want to set as targets.
- *   If you want to play more games at the same time, please change the BASE_SSID (line: 48) and the PSK (line: 49).
- * 
- * 
- *   @author Jero A
- *   @version 1.0
- *   @date 16.01.2020
- */
+    A game based on ESP8266 – Witty Cloud Moduls, ESP-Now and a laser pointer.
+    The goal of the game is to hit the blinking ESPs with the laser gun and reach a high score of hits.
+    It's like lasertag on fixed targets with a real laser.
+    This is the full code version. You need to comment out the unwanted modes to get a working program.
+
+    @author Jero A
+    @version 1.0
+    @date 16.01.2020
+*/
 
 //___Includes______________________________________________________________________________________________________________________
 
@@ -24,8 +22,9 @@ extern "C" {
 
 //___Modes_________________________________________________________________________________________________________________________
 
-// unwanted mode should be commented out
-#define DEBUG
+// unwanted modes should be commented out
+//#define TARGET
+#define GAMESERVER
 
 //___defines_______________________________________________________________________________________________________________________
 
@@ -101,57 +100,13 @@ void setup() {
 
   changeGPIOstatus(INIT);
 
-#ifdef DEBUG
-  Serial.begin(74880);
-  Serial.println("===========================================================");
-  Serial.print("Laser Game: ");
-  Serial.println("Debugmode on");
-  Serial.println("===========================================================");
-  Serial.println('\n');
-
-#ifdef GAMESERVER
-  Serial.println("===========================================================");
-  Serial.println("Gameserver")
-#endif
-
-#ifdef TARGET
-  Serial.println("===========================================================");
-  Serial.println("Target" );
-#endif
-
-  Serial.println("-----------------------------------------------------------");
-  Serial.print("This node AP mac: "); Serial.println(WiFi.softAPmacAddress());
-  Serial.print("This node STA mac: "); Serial.println(WiFi.macAddress());
-  Serial.println("===========================================================");
-  Serial.println('\n');
-#endif
-
   initEspNow();
-
-
-#ifdef DEBUG
-  Serial.println("===========================================================");
-  Serial.println("Setup done");
-#ifdef TARGET
-  Serial.println("-----------------------------------------------------------");
-  Serial.println("loop is starting");
-#endif
-  Serial.println("===========================================================");
-  Serial.println('\n');
-#endif
 }
-
 
 //___gameserver_loop_______________________________________________________________________________________________________________
 
 void loop() {
 #ifdef GAMESERVER
-#ifdef DEBUG
-  Serial.println("===========================================================");
-  Serial.println("loop is starting");
-  Serial.println("===========================================================");
-  Serial.println('\n');
-#endif
 
   // initialize all vars for the server
   uint8_t state = 0;
@@ -213,25 +168,6 @@ void loop() {
           bs[1] = currentTime & 0xFF;
           bs[3] = 1;
 
-#ifdef DEBUG
-          Serial.println("===========================================================");
-          Serial.print("Connected to Target ");
-          Serial.print(currentTarget + 1);        // i + 1 -> just for better reading, first target else would be target 0
-          Serial.print(" (MAC: ");
-          for (i = 0; i < 6; i++) {
-            Serial.print(potentialTargetsMacs[currentTarget][i], HEX);
-            if (i < 5) {
-              Serial.print(":");
-            } else {
-              Serial.print(")");
-            }
-          }
-          Serial.print(" for ");
-          Serial.print(currentTime);
-          Serial.println(" ms.");
-          Serial.println("-----------------------------------------------------------");
-#endif
-
           // sends bs to the selected target
           esp_now_send(potentialTargetsMacs[currentTarget], bs, sizeof(sensorData));
 
@@ -261,11 +197,6 @@ void loop() {
           //if target responds sensor working
           if (sensorData.data[0] == 3) {
 
-#ifdef DEBUG
-            Serial.println("Target sensor is working fine");
-            Serial.println("===========================================================");
-            Serial.println('\n');
-#endif
             // add it to the actuel target list for the game
             for (i = 0; i < 6; i++) {
               targetMacs[currentTarget][i] = potentialTargetsMacs[currentTarget][i];
@@ -276,23 +207,14 @@ void loop() {
 
           //target respond timeout
           else if (sensorData.data[0] == 4) {
-#ifdef DEBUG
-            Serial.println("Target sensor is useless");
-            Serial.println("===========================================================");
-            Serial.println('\n');
-#endif
+
             state = 3;
           }
         }
 
         //timeout timer for no response
         if ((millis() - sendTime) > currentTime + 100) {
-#ifdef DEBUG
-          Serial.println("Target communication timeout");
-          Serial.println("No answer from the Target");
-          Serial.println("===========================================================");
-          Serial.println('\n');
-#endif
+
           state = 3;
         }
 
@@ -308,12 +230,6 @@ void loop() {
           nextTarget++;
           state = 1;
         } else {
-#ifdef DEBUG
-          Serial.println("===========================================================");
-          Serial.println("Target sensor check completed");
-          Serial.println("===========================================================");
-          Serial.println('\n');
-#endif
 
           // set initSens false
           initSens = false;
@@ -345,16 +261,6 @@ void loop() {
             delay(200);
             changeGPIOstatus(OUT);
             delay(800);
-#ifdef DEBUG
-            Serial.println("===========================================================");
-            Serial.print("Server found Target ");
-            Serial.print(i + 1);  // i + 1 -> just for better reading, first target else would be target 0
-            Serial.print(" of ");
-            Serial.print(targetsFound);
-            Serial.println(" Target/s.");
-            Serial.println("===========================================================");
-            Serial.println('\n');
-#endif
 
             changeGPIOstatus(SEND);
           }
@@ -365,7 +271,7 @@ void loop() {
         }
         // if no targets were found restart searching
         else {
-          delay(100);
+          delay(1000);
           state = 0;
         }
         break;
@@ -383,26 +289,6 @@ void loop() {
         // current time get splitt up in bs0 and bs1
         bs[0] = currentTime >> 8;
         bs[1] = currentTime & 0xFF;
-
-#ifdef DEBUG
-        Serial.println("===========================================================");
-        Serial.print("Connected to Target ");
-        Serial.print(currentTarget + 1);        // i + 1 -> just for better reading, first target else would be target 0
-        Serial.print(" (MAC: ");
-        for (i = 0; i < 6; i++) {
-          Serial.print(targetMacs[currentTarget][i], HEX);
-          if (i < 5) {
-            Serial.print(":");
-          } else {
-            Serial.print(")");
-          }
-        }
-        Serial.print(" for ");
-        Serial.print(currentTime);
-        Serial.println(" ms.");
-        Serial.println("===========================================================");
-        Serial.println('\n');
-#endif
 
         // sends bs to the selected target
         esp_now_send(targetMacs[currentTarget], bs, sizeof(sensorData));
@@ -427,23 +313,12 @@ void loop() {
 
           //if target responds hit
           if (sensorData.data[0] == 1) {
-#ifdef DEBUG
-            Serial.println("===========================================================");
-            Serial.println("Target send HIT 0.o ");
-            Serial.println("===========================================================");
-            Serial.println('\n');
-#endif
+
             hitCounter++;
 
             //target respond timeout
           } else if (sensorData.data[0] == 2) {
-#ifdef DEBUG
-            Serial.println("===========================================================");
-            Serial.println("Target report no hit");
-            Serial.println("===========================================================");
-            Serial.println('\n');
 
-#endif
             // no correct message
             changeGPIOstatus(ERR);
           }
@@ -454,13 +329,6 @@ void loop() {
 
         //timeout timer for no response
         else if ((millis() - sendTime) > currentTime + 100) {
-#ifdef DEBUG
-          Serial.println("===========================================================");
-          Serial.println("Target communication timeout");
-          Serial.println("No answer from the Target");
-          Serial.println("===========================================================");
-          Serial.println('\n');
-#endif
 
           changeGPIOstatus(ERR);
 
@@ -471,14 +339,7 @@ void loop() {
         Serial.flush();
 
         if (millis() - startTime > gameLength) {
-#ifdef DEBUG
-          Serial.println("===========================================================");
-          Serial.println("Game over");
-          Serial.print(hitCounter);
-          Serial.println(" hits" );
-          Serial.println("===========================================================");
-          Serial.println('\n');
-#endif
+
           // visual game over
           rainbowEnd();
 
@@ -499,12 +360,6 @@ void loop() {
 
           // in 10 sec starts new game
           delay(10000);
-#ifdef DEBUG
-          Serial.println("===========================================================");
-          Serial.println("Restart the Game :D");
-          Serial.println("===========================================================");
-          Serial.println('\n');
-#endif
 
           state = 0;
         }
@@ -556,17 +411,6 @@ void loop() {
 
     initSens = sensorData.data[3];
 
-#ifdef DEBUG
-    Serial.println("===========================================================");
-    Serial.print("activated for ");
-    Serial.print(activeTime);
-    Serial.println(" ms");
-    Serial.print("Sensor initialization : ");
-    Serial.println(initSens);
-    Serial.println("===========================================================");
-    Serial.println('\n');
-#endif
-
     // start time for the endFlag loop
     startTime = millis();
 
@@ -582,15 +426,6 @@ void loop() {
         changeGPIOstatus(ERR);
       } else {
         bs[0] = 3;
-#ifdef DEBUG
-        Serial.println("===========================================================");
-        Serial.print("init VAL: ");
-        Serial.println(initVal);
-        Serial.print("120% VAL: ");
-        Serial.println(initVal * 1.2);
-        Serial.println("===========================================================");
-        Serial.println('\n');
-#endif
       }
 
       //---------------------------------------------------------------------------------------------------------------------------------
@@ -615,42 +450,13 @@ void loop() {
           bs[0] = 2;
           // stop endFlag loop
           endFlag = true;
-#ifdef DEBUG
-          Serial.println("===========================================================");
-          Serial.println("Target timeout");
-          Serial.println("===========================================================");
-          Serial.println('\n');
-#endif
+
           break;
         }
 
-
-#ifdef DEBUG
-        //simulate hits for long active times
-        if (millis() - startTime > 4000) {
-          // write a hit in the connection array
-          bs[0] = 1;
-          endFlag = true;
-          Serial.println("===========================================================");
-          Serial.println("HIT");
-          Serial.println("===========================================================");
-          Serial.println('\n');
-        }
-#endif
-
-
         // normal hit
         if (analogVal >= (initVal * 1.2)) {
-#ifdef DEBUG
 
-          Serial.println("===========================================================");
-          Serial.println("HIT");
-          Serial.println("-----------------------------------------------------------");
-          Serial.print("Ziel getroffen, VAL: ");
-          Serial.println(analogVal);
-          Serial.println("===========================================================");
-          Serial.println('\n');
-#endif
           // write a hit in the connection array
           bs[0] = 1;
           endFlag = true;
@@ -673,12 +479,6 @@ void loop() {
 
 
 void initEspNow() {
-#ifdef DEBUG
-  Serial.println("===========================================================");
-  Serial.println("init methode");
-  Serial.println("===========================================================");
-  Serial.println('\n');
-#endif
 
   // get ssid of the device
   String ssid = String(BASE_SSID) + WiFi.softAPmacAddress().substring(9);
@@ -687,12 +487,7 @@ void initEspNow() {
 
   // if initialization fails
   if (esp_now_init() != 0) {
-#ifdef DEBUG
-    Serial.println("===========================================================");
-    Serial.println(" ESP_Now init failed");
-    Serial.println("===========================================================");
-    Serial.println('\n');
-#endif
+
     changeGPIOstatus(ERR);
     delay(3000);
     ESP.restart();
@@ -704,21 +499,6 @@ void initEspNow() {
 #ifdef TARGET
   esp_now_add_peer(GAMESERVER_ap_mac, ESP_NOW_ROLE_COMBO, WIFI_CHANNEL, NULL, 0);
   esp_now_add_peer(GAMESERVER_sta_mac, ESP_NOW_ROLE_COMBO, WIFI_CHANNEL, NULL, 0);
-#ifdef DEBUG
-  Serial.println("===========================================================");
-  Serial.print("Add Server peer : ");
-  Serial.print(" (MAC: ");
-  for (int i = 0; i < 6; i++) {
-    Serial.print(GAMESERVER_ap_mac[i], HEX);
-    if (i < 5) {
-      Serial.print(":");
-    } else {
-      Serial.println(")");
-    }
-  }
-  Serial.println("===========================================================");
-  Serial.println('\n');
-#endif
 #endif
 
   // triggers everytime something is received by a device
@@ -763,33 +543,13 @@ void initEspNow() {
 #ifdef GAMESERVER
 void scanForTargets() {
   int8_t scanResults = WiFi.scanNetworks();
-#ifdef DEBUG
-  Serial.println("===========================================================");
-  Serial.println("Scan for targets");
-  Serial.println("===========================================================");
-  Serial.println('\n');
-#endif
 
   if (scanResults == 0) {
-#ifdef DEBUG
-    Serial.println("===========================================================");
-    Serial.println("No WiFi devices in AP Mode found");
-    Serial.println("===========================================================");
-    Serial.println('\n');
-#endif
 
     changeGPIOstatus(ERR);
   }
 
   else {
-#ifdef DEBUG
-    Serial.println("===========================================================");
-    Serial.print("Found ");
-    Serial.print(scanResults);
-    Serial.println(" potential Wifi devices ");
-    Serial.println("===========================================================");
-    Serial.println('\n');
-#endif
 
     for (int i = 0; i < scanResults; ++i) {
 
@@ -810,27 +570,6 @@ void scanForTargets() {
           }
         }
 
-#ifdef DEBUG
-        Serial.println("===============================================");
-        Serial.print("Target :");
-        Serial.print(i);
-        Serial.print(" : ");
-        Serial.println(potentialTargets);
-        Serial.print("SSID : ");
-        Serial.print(i);
-        Serial.print(" : ");
-        Serial.println(SSID);
-        Serial.print("RSSI :");
-        Serial.print(i);
-        Serial.print(" : ");
-        Serial.println(RSSI);
-        Serial.print("BSSIDstr :");
-        Serial.print(i);
-        Serial.print(" : ");
-        Serial.println(BSSIDstr);
-        Serial.println("===============================================");
-#endif
-
         // increase the target counter
         potentialTargets++;
       }
@@ -839,13 +578,6 @@ void scanForTargets() {
   // clean up ram
   WiFi.scanDelete();
   initSens = true;
-#ifdef DEBUG
-  Serial.println("===============================================");
-  Serial.println("End of scan methode");
-  Serial.print("Potential Targets : ");
-  Serial.println(potentialTargets);
-  Serial.println("===============================================");
-#endif
 }
 #endif
 
@@ -868,26 +600,8 @@ int initSensor() {
   delay(500);
   int val4 = analogRead(A0);
 
-#ifdef DEBUG
-  Serial.println("===========================================================");
-  Serial.print("First Val: ");
-  Serial.println(val1);
-  Serial.print("Second Val: ");
-  Serial.println(val2);
-  Serial.print("Third Val: ");
-  Serial.println(val3);
-  Serial.print("Fourth Val: ");
-  Serial.println(val4);
-  Serial.println("-----------------------------------------------------------");
-#endif
-
   initVal = (val1 + val2 + val3 + val4) / 4;
-#ifdef DEBUG
-  Serial.print("calc initVal Val: ");
-  Serial.println(initVal);
-  Serial.println("===========================================================");
-  Serial.println('\n');
-#endif
+
   return initVal;
 }
 #endif
