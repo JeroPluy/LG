@@ -65,7 +65,7 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
  
  VERSION 2 : [LG_Server_Target](../Game/LG_Server_Target)
  
- ### The project
+ ### Game instructions
  
  ### The project
   
