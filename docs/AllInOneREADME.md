@@ -46,5 +46,5 @@
 #### Installation complete
 
 ### Game process 
-see [LG-README.md](https://github.com/JeroPlay/LG/edit/master/README.md)
+see [README.md](README.md)
 
