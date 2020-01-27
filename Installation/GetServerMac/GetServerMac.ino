@@ -1,5 +1,5 @@
 /**
- * A small program to get the AP mac and the STA mac from the server  
+ * A small program to get the AP mac and the STA mac from the ESP 
  *
  *  @author Jero A
  *  @version 1.0
