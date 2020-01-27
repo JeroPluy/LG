@@ -74,6 +74,9 @@ uint8_t GAMESERVER_sta_mac[]  = {0xEC, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF};
 // init sensor val
 int initVal;
 
+// initSuccess
+volatile boolean initSuccess = false;
+
 #endif
 
 //___gameserver_vars____________________________________________________________________________________________________________
@@ -241,7 +244,7 @@ void loop() {
           state++;
           changeGPIOstatus(INIT);
         }
-        // if no targets were found restart searching
+        // if no potential targets were found restart searching
         else {
           delay(100);
           state = 0;
@@ -294,6 +297,7 @@ void loop() {
           Serial.println("===========================================================");
           Serial.println('\n');
 #endif
+          changeGPIOstatus(ERR);
           state = 3;
         }
 
@@ -483,7 +487,7 @@ void loop() {
           // visual game over
           rainbowEnd();
 
-          if (hitCounter = 0) {
+          if (hitCounter == 0) {
             // no hits reproted
             changeGPIOstatus(ERR);
           } else
@@ -498,6 +502,7 @@ void loop() {
             }
           }
 
+          changeGPIOstatus(POWER);
           // in 10 sec starts new game
           delay(10000);
 #ifdef DEBUG
@@ -538,14 +543,13 @@ void loop() {
   // connection array
   uint8_t bs[sizeof(sensorData)];
 
-
   // value of the LDR before hit while game
   int analogVal = 0;
 
   //----------------------------------------------------------------------------------------------------------------------------
-  
+
   // standard led status if it isn't connected
-  if (bs[0] == 4) {
+  if (!initSuccess) {
     changeGPIOstatus(ERR);
   }
 #ifdef DEBUG
@@ -553,6 +557,7 @@ void loop() {
     changeGPIOstatus(RECV);
   }
 #endif
+
   else {
     changeGPIOstatus(OUT);
   }
@@ -574,7 +579,7 @@ void loop() {
     Serial.print(activeTime);
     Serial.println(" ms");
     Serial.print("Sensor initialization : ");
-    Serial.println(initSens);
+    Serial.println(initVal);
     Serial.println("===========================================================");
     Serial.println('\n');
 #endif
@@ -594,6 +599,8 @@ void loop() {
         changeGPIOstatus(ERR);
       } else {
         bs[0] = 3;
+        initSuccess = true;
+
 #ifdef DEBUG
         Serial.println("===========================================================");
         Serial.print("init VAL: ");
@@ -603,6 +610,7 @@ void loop() {
         Serial.println("===========================================================");
         Serial.println('\n');
 #endif
+
       }
 
       //------------------------------------------------------------------------------------------------------------------------
@@ -627,6 +635,7 @@ void loop() {
           bs[0] = 2;
           // stop endFlag loop
           endFlag = true;
+          changeGPIOstatus(SEND);
 #ifdef DEBUG
           Serial.println("===========================================================");
           Serial.println("Target timeout");
@@ -666,13 +675,12 @@ void loop() {
           // write a hit in the connection array
           bs[0] = 1;
           endFlag = true;
+          changeGPIOstatus(RECV);
         }
       }
     }
 
     //--------------------------------------------------------------------------------------------------------------------------
-
-    changeGPIOstatus(SEND);
 
     //send the message
     esp_now_send(GAMESERVER_ap_mac, bs, sizeof(sensorData));
@@ -873,11 +881,11 @@ int initSensor() {
   // get four current vals befor the game starts to calibrate itself
   delay(100);
   int val1 = analogRead(A0);
-  delay(500);
+  delay(800);
   int val2 = analogRead(A0);
-  delay(500);
+  delay(800);
   int val3 = analogRead(A0);
-  delay(500);
+  delay(800);
   int val4 = analogRead(A0);
 
 #ifdef DEBUG
