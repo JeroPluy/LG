@@ -22,7 +22,7 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
 2. Add the needed libraries. 
 
    - ESP8266 ([How to add libraries](https://randomnerdtutorials.com/how-to-install-esp8266-board-arduino-ide/))
-   - Color   &nbsp; &nbsp; &nbsp;([How to add .zip - libraries](https://www.arduino.cc/en/Guide/Libraries))
+   - Color   &nbsp; &nbsp; &nbsp;([How to add .zip - libraries](https://www.arduino.cc/en/Guide/Libraries))  (The library is in the installation directory)
    
 3. Connect the ESP8266 that will be the server host to your PC.
 
@@ -34,7 +34,7 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
 
 5. Upload the program to the ESP. (`Ctrl + U`)
 
-6. Copy the AP MAC and the STA MAC from the console to the mac.txt file.
+6. Copy the AP MAC and the STA MAC from the console to the [Server-Mac.txt](../Installation/Server-Mac.txt) file.
 
    ```
    Console Output Example:
