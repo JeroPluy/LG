@@ -25,8 +25,8 @@ extern "C" {
 
 // unwanted modes should be commented out
 #define DEBUG
-//#define TARGET
-#define GAMESERVER
+#define TARGET
+//#define GAMESERVER
 
 //___defines____________________________________________________________________________________________________________________
 
