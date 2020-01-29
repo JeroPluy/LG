@@ -21,7 +21,7 @@ Color LED(15, 12, 13);
 void setup() {
   Serial.begin(74880);
   Serial.println("===========================================================");
-  Serial.println("Gameserver")
+  Serial.println("Gameserver");
   Serial.println("-----------------------------------------------------------");
   Serial.print("This node AP mac: "); Serial.println(WiFi.softAPmacAddress());
   Serial.print("This node STA mac: "); Serial.println(WiFi.macAddress());

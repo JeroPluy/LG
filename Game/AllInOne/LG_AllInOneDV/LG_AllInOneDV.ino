@@ -25,8 +25,8 @@ extern "C" {
 
 // unwanted modes should be commented out
 #define DEBUG
-#define TARGET
-//#define GAMESERVER
+//#define TARGET
+#define GAMESERVER
 
 //___defines____________________________________________________________________________________________________________________
 
@@ -68,8 +68,8 @@ Color LED(15, 12, 13);
 // server esp mac addresses for the targets
 #ifdef TARGET
 
-uint8_t GAMESERVER_ap_mac[]   = {0xEE, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF};
-uint8_t GAMESERVER_sta_mac[]  = {0xEC, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF};
+uint8_t GAMESERVER_ap_mac[]   = {0xEE, 0xFA, 0xBC, 0x4C, 0x57, 0x12};
+uint8_t GAMESERVER_sta_mac[]  = {0xEC, 0xFA, 0xBC, 0x4C, 0x57, 0x12};
 
 // init sensor val
 int initVal;
@@ -199,6 +199,7 @@ void loop() {
 
       //search for targets
       case 0:
+        changeGPIOstatus(INIT);
         targetsFound = 0;
         potentialTargets = 0;
         scanForTargets();
@@ -242,6 +243,7 @@ void loop() {
           // start sending timer
           sendTime = millis();
           state++;
+          haveReading = false;
           changeGPIOstatus(INIT);
         }
         // if no potential targets were found restart searching
@@ -257,6 +259,7 @@ void loop() {
       case 2:
         //if gets an answer
         if (haveReading) {
+          
           changeGPIOstatus(RECV);
 
           // reset the message notification
@@ -367,6 +370,8 @@ void loop() {
           startTime = millis();
           // no interesting message received
           haveReading = false;
+
+          countDown();
         }
         // if no targets were found restart searching
         else {
@@ -954,6 +959,17 @@ void rainbowEnd() {
   delay(1000);
   LED.violette();
   delay(1000);
+}
+
+//____Countdown_________________________________________________________________________________________________________________
+
+void countDown() {
+  LED.red();
+  delay(1500);
+  LED.yellow();
+  delay(1500);
+  LED.green();
+  delay(400);
 }
 
 //______________________________________________________________________________________________________________________________
