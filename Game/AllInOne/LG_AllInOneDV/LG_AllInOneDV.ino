@@ -58,7 +58,7 @@ struct __attribute__((packed)) SENSOR_DATA {
 volatile boolean haveReading = false;
 
 // should the sensor still be initialized
-volatile boolean initSens = false;
+uint8_t targetAction = 0;
 
 // set LED Pins for rot,green,blue
 Color LED(15, 12, 13);
@@ -216,7 +216,9 @@ void loop() {
           // current time get splitt up in bs0 and bs1
           bs[0] = currentTime >> 8;
           bs[1] = currentTime & 0xFF;
-          bs[3] = 1;
+
+          // tell the target which target action
+          bs[3] = INIT;
 
 #ifdef DEBUG
           Serial.println("===========================================================");
@@ -259,7 +261,7 @@ void loop() {
       case 2:
         //if gets an answer
         if (haveReading) {
-          
+
           changeGPIOstatus(RECV);
 
           // reset the message notification
@@ -323,8 +325,8 @@ void loop() {
           Serial.println('\n');
 #endif
 
-          // set initSens false
-          initSens = false;
+          // set targetAction off
+          targetAction = 0;
           // delete the reference in the array
           bs[3] = 0;
           // reset potentials
@@ -382,9 +384,36 @@ void loop() {
 
       //------------------------------------------------------------------------------------------------------------------------
 
+      // start menu, in which the first target of the list is green and the game starts when it is hit
+      case 5:
+        currentTarget = 0;
+
+        bs[3] =
+
+#ifdef DEBUG
+          Serial.println("===========================================================");
+        Serial.print("Connected to Target ");
+        Serial.print(currentTarget + 1);        // i + 1 -> just for better reading, first target else would be target 0
+        Serial.print(" (MAC: ");
+        for (i = 0; i < 6; i++) {
+          Serial.print(targetMacs[currentTarget][i], HEX);
+          if (i < 5) {
+            Serial.print(":");
+          } else {
+            Serial.print(")");
+          }
+        }
+        Serial.println("Waiting for the game to start.");
+        Serial.println("===========================================================");
+        Serial.println('\n');
+#endif
+
+        break;
+      //------------------------------------------------------------------------------------------------------------------------
+
       // selects a random target from the target list and transmits the response time (currentTime)
       // the target knows what to do
-      case 5:
+      case 6:
         currentTarget = random(targetsFound);
 
         // the target has 1.5 - 7 seconds to respond a hit
@@ -426,7 +455,7 @@ void loop() {
       //------------------------------------------------------------------------------------------------------------------------
 
       // analyses the answer of the target
-      case 6:
+      case 7:
 
         //if gets an answer
         if (haveReading) {
@@ -458,8 +487,8 @@ void loop() {
             changeGPIOstatus(ERR);
           }
 
-          //reaches the end
-          state = 7;
+          //connect to the next target
+          state = 8;
         }
 
         //timeout timer for no response
@@ -474,8 +503,8 @@ void loop() {
 
           changeGPIOstatus(ERR);
 
-          //reaches the end
-          state = 7;
+          //connect to the next target
+          state = 8;
 
         }
         Serial.flush();
@@ -517,6 +546,7 @@ void loop() {
           Serial.println('\n');
 #endif
 
+          // end of this round
           state = 0;
         }
         break;
@@ -524,10 +554,10 @@ void loop() {
       //------------------------------------------------------------------------------------------------------------------------
 
       // connect to the next target
-      case 7:
+      case 8:
         // 2 sec. before next target gets selected
         delay(2000);
-        state = 5;
+        state = 6;
         break;
     }
   }
@@ -572,123 +602,132 @@ void loop() {
 
     // reset the message notification
     haveReading = false;
+    // change for start
 
-    //time for the hit
-    activeTime = (sensorData.data[0] << 8) | sensorData.data[1];
-
-    initSens = sensorData.data[3];
-
-#ifdef DEBUG
-    Serial.println("===========================================================");
-    Serial.print("activated for ");
-    Serial.print(activeTime);
-    Serial.println(" ms");
-    Serial.print("Sensor initialization : ");
-    Serial.println(initVal);
-    Serial.println("===========================================================");
-    Serial.println('\n');
-#endif
-
-    // start time for the endFlag loop
-    startTime = millis();
-
-    if (initSens == true) {
-
-      // init Sensor
-      initVal = initSensor();
-
-
-      if ((initVal < 5) || (initVal > 850)) {
-        // message for the server
-        bs[0] = 4;
-        changeGPIOstatus(ERR);
-      } else {
-        bs[0] = 3;
-        initSuccess = true;
-
-#ifdef DEBUG
-        Serial.println("===========================================================");
-        Serial.print("init VAL: ");
-        Serial.println(initVal);
-        Serial.print("120% VAL: ");
-        Serial.println(initVal * 1.2);
-        Serial.println("===========================================================");
-        Serial.println('\n');
-#endif
-
-      }
-
-      //------------------------------------------------------------------------------------------------------------------------
-
+    // get the target action
+    targetAction = sensorData.data[3];
+    
+    if (targetAction == SEND) {
+      
     } else {
+      
+      //time for the hit
+      activeTime = (sensorData.data[0] << 8) | sensorData.data[1];
 
-      changeGPIOstatus(WAIT);
 
-      // accessable as target (inner loop)
-      while (endFlag == false) {
-        // wathcdog
-        delay(1);
-        // get the actuell value of the light sensor
-        analogVal = analogRead(A0);
 
-        // whats happen next:
+#ifdef DEBUG
+      Serial.println("===========================================================");
+      Serial.print("activated for ");
+      Serial.print(activeTime);
+      Serial.println(" ms");
+      Serial.print("Sensor initialization : ");
+      Serial.println(initVal);
+      Serial.println("===========================================================");
+      Serial.println('\n');
+#endif
 
-        //if needs to long to answer -> timeout
-        if (millis() - startTime > activeTime) {
+      // start time for the endFlag loop
+      startTime = millis();
 
+      if (targetAction == INIT) {
+
+        // init Sensor
+        initVal = initSensor();
+
+
+        if ((initVal < 5) || (initVal > 850)) {
           // message for the server
-          bs[0] = 2;
-          // stop endFlag loop
-          endFlag = true;
-          changeGPIOstatus(SEND);
+          bs[0] = 4;
+          changeGPIOstatus(ERR);
+        } else {
+          bs[0] = 3;
+          initSuccess = true;
+
 #ifdef DEBUG
           Serial.println("===========================================================");
-          Serial.println("Target timeout");
+          Serial.print("init VAL: ");
+          Serial.println(initVal);
+          Serial.print("120% VAL: ");
+          Serial.println(initVal * 1.2);
           Serial.println("===========================================================");
           Serial.println('\n');
 #endif
-          break;
+
         }
 
+        //------------------------------------------------------------------------------------------------------------------------
+
+      } else {
+
+        changeGPIOstatus(WAIT);
+
+        // accessable as target (inner loop)
+        while (endFlag == false) {
+          // wathcdog
+          delay(1);
+          // get the actuell value of the light sensor
+          analogVal = analogRead(A0);
+
+          // whats happen next:
+
+          //if needs to long to answer -> timeout
+          if (millis() - startTime > activeTime) {
+
+            // message for the server
+            bs[0] = 2;
+            // stop endFlag loop
+            endFlag = true;
+            changeGPIOstatus(SEND);
+#ifdef DEBUG
+            Serial.println("===========================================================");
+            Serial.println("Target timeout");
+            Serial.println("===========================================================");
+            Serial.println('\n');
+#endif
+            break;
+          }
+
 
 #ifdef DEBUG
-        //simulate hits for long active times
-        if (millis() - startTime > 4000) {
-          // write a hit in the connection array
-          bs[0] = 1;
-          endFlag = true;
-          Serial.println("===========================================================");
-          Serial.println("HIT");
-          Serial.println("===========================================================");
-          Serial.println('\n');
-        }
+          //simulate hits for long active times
+          if (millis() - startTime > 4000) {
+            // write a hit in the connection array
+            bs[0] = 1;
+            endFlag = true;
+            Serial.println("===========================================================");
+            Serial.println("HIT");
+            Serial.println("===========================================================");
+            Serial.println('\n');
+          }
 #endif
 
 
-        // normal hit
-        if (analogVal >= (initVal * 1.2)) {
+          // normal hit
+          if (analogVal >= (initVal * 1.2)) {
 #ifdef DEBUG
 
-          Serial.println("===========================================================");
-          Serial.println("HIT");
-          Serial.println("-----------------------------------------------------------");
-          Serial.print("Ziel getroffen, VAL: ");
-          Serial.println(analogVal);
-          Serial.println("===========================================================");
-          Serial.println('\n');
+            Serial.println("===========================================================");
+            Serial.println("HIT");
+            Serial.println("-----------------------------------------------------------");
+            Serial.print("Ziel getroffen, VAL: ");
+            Serial.println(analogVal);
+            Serial.println("===========================================================");
+            Serial.println('\n');
 #endif
-          // write a hit in the connection array
-          bs[0] = 1;
-          endFlag = true;
-          changeGPIOstatus(RECV);
+            // write a hit in the connection array
+            bs[0] = 1;
+            endFlag = true;
+            changeGPIOstatus(RECV);
+          }
         }
       }
+
+      //--------------------------------------------------------------------------------------------------------------------------
+
+      //send the message
+      esp_now_send(GAMESERVER_ap_mac, bs, sizeof(sensorData));
     }
-
-    //--------------------------------------------------------------------------------------------------------------------------
-
-    //send the message
-    esp_now_send(GAMESERVER_ap_mac, bs, sizeof(sensorData));
   }
 #endif //end -  Target loop
 }
@@ -754,7 +793,7 @@ void initEspNow() {
     // Server handling
 #ifdef GAMESERVER
 
-    if (initSens == true) {
+    if (targetAction == 1) {
       if ((mac[0] == potentialTargetsMacs[currentTarget][0])
           && (mac[1] == potentialTargetsMacs[currentTarget][1])
           && (mac[2] == potentialTargetsMacs[currentTarget][2])
@@ -863,7 +902,7 @@ void scanForTargets() {
   }
   // clean up ram
   WiFi.scanDelete();
-  initSens = true;
+  targetAction = 1;
 #ifdef DEBUG
   Serial.println("===============================================");
   Serial.println("End of scan methode");
