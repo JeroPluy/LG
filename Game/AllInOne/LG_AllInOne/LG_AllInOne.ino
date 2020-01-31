@@ -1,13 +1,14 @@
 /**
-  * A game based on ESP8266 – Witty Cloud Moduls, ESP-Now and a laser pointer.
-  *  The goal of the game is to hit the blinking ESPs with the laser gun and reach a high score of hits.
-  *  It's like lasertag on fixed targets with a real laser.
-  *  This is the full code version. You need to comment out the unwanted modes to get a working program.
-  *
-  *  @author Jero A
-  *  @version 1.0
-  *  @date 16.01.2020
-  */
+      A game based on ESP8266 – Witty Cloud Moduls, ESP-Now and a laser pointer.
+      The goal of the game is to hit the blinking ESPs with the laser gun and reach a high score of hits.
+      It's like lasertag on fixed targets with a real laser.
+      This is the full code version. You need to comment out the unwanted modes to get a working program.
+
+
+      @author Jero A
+      @version 1.0
+      @date 16.01.2020
+*/
 
 //___Includes___________________________________________________________________________________________________________________
 
@@ -23,13 +24,13 @@ extern "C" {
 //___Modes______________________________________________________________________________________________________________________
 
 // unwanted modes should be commented out
-//#define TARGET
-#define GAMESERVER
+#define TARGET
+//#define GAMESERVER
 
 //___defines____________________________________________________________________________________________________________________
 
 // Color Use Cases
-#define POWER 0     // yellow
+#define MENU 0      // yellow
 #define INIT 1      // blue
 #define CONN 2      // white
 #define RECV 3      // green
@@ -56,7 +57,7 @@ struct __attribute__((packed)) SENSOR_DATA {
 volatile boolean haveReading = false;
 
 // should the sensor still be initialized
-volatile boolean initSens = false;
+uint8_t targetAction = 0;
 
 // set LED Pins for rot,green,blue
 Color LED(15, 12, 13);
@@ -66,11 +67,14 @@ Color LED(15, 12, 13);
 // server esp mac addresses for the targets
 #ifdef TARGET
 
-uint8_t GAMESERVER_ap_mac[]   = {0xEE, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF};
-uint8_t GAMESERVER_sta_mac[]  = {0xEC, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF};
+uint8_t GAMESERVER_ap_mac[]   = {0xEE, 0xFA, 0xBC, 0x4C, 0x57, 0x12};
+uint8_t GAMESERVER_sta_mac[]  = {0xEC, 0xFA, 0xBC, 0x4C, 0x57, 0x12};
 
 // init sensor val
 int initVal;
+
+// initSuccess
+volatile boolean initSuccess = false;
 
 #endif
 
@@ -103,9 +107,11 @@ void setup() {
   initEspNow();
 }
 
+
 //___gameserver_loop____________________________________________________________________________________________________________
 
 void loop() {
+
 #ifdef GAMESERVER
 
   // initialize all vars for the server
@@ -134,7 +140,7 @@ void loop() {
   // transfer array for data
   uint8_t bs[sizeof(sensorData)];
 
-  // copy all data from bs to sensorData
+  // copy all data from bs to sensorData (clear sensorData)
   memcpy(bs, &sensorData, sizeof(sensorData));
 
   //----------------------------------------------------------------------------------------------------------------------------
@@ -150,6 +156,7 @@ void loop() {
 
       //search for targets
       case 0:
+        changeGPIOstatus(INIT);
         targetsFound = 0;
         potentialTargets = 0;
         scanForTargets();
@@ -166,7 +173,9 @@ void loop() {
           // current time get splitt up in bs0 and bs1
           bs[0] = currentTime >> 8;
           bs[1] = currentTime & 0xFF;
-          bs[3] = 1;
+
+          // transmite the target which target action
+          bs[3] = INIT;
 
           // sends bs to the selected target
           esp_now_send(potentialTargetsMacs[currentTarget], bs, sizeof(sensorData));
@@ -174,9 +183,11 @@ void loop() {
           // start sending timer
           sendTime = millis();
           state++;
+          haveReading = false;
           changeGPIOstatus(INIT);
         }
-        // if no targets were found restart searching
+
+        // if no potential targets were found restart searching
         else {
           delay(100);
           state = 0;
@@ -189,6 +200,7 @@ void loop() {
       case 2:
         //if gets an answer
         if (haveReading) {
+
           changeGPIOstatus(RECV);
 
           // reset the message notification
@@ -215,6 +227,7 @@ void loop() {
         //timeout timer for no response
         if ((millis() - sendTime) > currentTime + 100) {
 
+          changeGPIOstatus(ERR);
           state = 3;
         }
 
@@ -231,8 +244,8 @@ void loop() {
           state = 1;
         } else {
 
-          // set initSens false
-          initSens = false;
+          // set targetAction off
+          targetAction = 0;
           // delete the reference in the array
           bs[3] = 0;
           // reset potentials
@@ -252,35 +265,113 @@ void loop() {
 
           state++;
 
-          // reset hit counter
-          hitCounter = 0;
-
           // shows how many targets you found (LED blink)
           for (i = 0; i < targetsFound; i++) {
             changeGPIOstatus(CONN);
             delay(200);
             changeGPIOstatus(OUT);
             delay(800);
-
-            changeGPIOstatus(SEND);
           }
-          // start time for the sending process
-          startTime = millis();
-          // no interesting message received
+
+          // no message receiving
           haveReading = false;
+
+          // set targetAction off
+          targetAction = 0;
+
         }
+
         // if no targets were found restart searching
         else {
-          delay(1000);
+          delay(100);
           state = 0;
         }
         break;
 
       //------------------------------------------------------------------------------------------------------------------------
 
+      // start menu, in which the first target of the list is green
+      // and the game starts when it is hit
+      case 5:
+
+        // set thee first target as start-"button"
+        currentTarget = 0;
+
+        // refresh after 1 min.
+        currentTime = 60000;
+
+        // current time get splitt up in bs0 and bs1
+        bs[0] = currentTime >> 8;
+        bs[1] = currentTime & 0xFF;
+
+        // transmite the target which target action
+        bs[3] = MENU;
+
+        // sends bs to the selected target
+        esp_now_send(targetMacs[currentTarget], bs, sizeof(sensorData));
+
+        // start sending timer
+        sendTime = millis();
+        state++;
+        changeGPIOstatus(MENU);
+        break;
+
+      //------------------------------------------------------------------------------------------------------------------------
+
+      // analyses the answer of the start target
+      case 6:
+
+        //if gets an answer
+        if (haveReading) {
+
+          changeGPIOstatus(RECV);
+          // reset the message notification
+          haveReading = false;
+
+          //if target responds hit - start the game
+          if (sensorData.data[0] == 1) {
+            state = 7;
+
+            // set the target action to game setting
+            bs[3] = RECV;
+
+            // reset hit counter
+            hitCounter = 0;
+
+            countDown();
+
+            // start time for the game
+            startTime = millis();
+
+          }
+
+          //target respond no hit
+          else if (sensorData.data[0] == 2) {
+            // refresh the time and the connection
+            state = 5;
+          }
+        }
+
+        //timeout timer for no response
+        else if ((millis() - sendTime) > currentTime + 100) {
+
+          changeGPIOstatus(ERR);
+          delay(2000);
+
+          //restart scan for targets
+          state = 0;
+          break;
+        }
+
+        Serial.flush();
+        break;
+
+      //------------------------------------------------------------------------------------------------------------------------
+
+      // actual game start
       // selects a random target from the target list and transmits the response time (currentTime)
       // the target knows what to do
-      case 5:
+      case 7:
         currentTarget = random(targetsFound);
 
         // the target has 1.5 - 7 seconds to respond a hit
@@ -302,7 +393,7 @@ void loop() {
       //------------------------------------------------------------------------------------------------------------------------
 
       // analyses the answer of the target
-      case 6:
+      case 8:
 
         //if gets an answer
         if (haveReading) {
@@ -323,8 +414,8 @@ void loop() {
             changeGPIOstatus(ERR);
           }
 
-          //reaches the end
-          state = 7;
+          //connect to the next target
+          state = 9;
         }
 
         //timeout timer for no response
@@ -332,8 +423,8 @@ void loop() {
 
           changeGPIOstatus(ERR);
 
-          //reaches the end
-          state = 7;
+          //connect to the next target
+          state = 9;
 
         }
         Serial.flush();
@@ -342,12 +433,11 @@ void loop() {
 
           // visual game over
           rainbowEnd();
-          //"calculate hits" - better visualisation (could be removed)
-          delay(2000);
 
           if (hitCounter == 0) {
             // no hits reproted
             changeGPIOstatus(ERR);
+            delay(8000);
           } else
           {
             // report hit counter by led blinking
@@ -358,22 +448,25 @@ void loop() {
               changeGPIOstatus(OUT);
               delay(800);
             }
+
+            changeGPIOstatus(MENU);
+            // in 10 sec starts new game
+            delay(10000);
           }
 
-          // in 10 sec starts new game
-          delay(10000);
-
+          // end of this round
           state = 0;
+
         }
         break;
 
       //------------------------------------------------------------------------------------------------------------------------
 
       // connect to the next target
-      case 7:
+      case 9:
         // 2 sec. before next target gets selected
         delay(2000);
-        state = 5;
+        state = 7;
         break;
     }
   }
@@ -394,29 +487,42 @@ void loop() {
   // connection array
   uint8_t bs[sizeof(sensorData)];
 
-
   // value of the LDR before hit while game
   int analogVal = 0;
 
   //----------------------------------------------------------------------------------------------------------------------------
 
-  changeGPIOstatus(RECV);
+  // standard led status if it isn't connected
+  if (!initSuccess) {
+    changeGPIOstatus(ERR);
+  }
+#ifdef DEBUG
+  else if (1) {
+    changeGPIOstatus(RECV);
+  }
+#endif
+
+  else {
+    changeGPIOstatus(OUT);
+  }
 
   // if the target gets a message from the server
   if (haveReading) {
 
     // reset the message notification
     haveReading = false;
+    // change for start
+
+    // get the target action
+    targetAction = sensorData.data[3];
 
     //time for the hit
     activeTime = (sensorData.data[0] << 8) | sensorData.data[1];
 
-    initSens = sensorData.data[3];
-
     // start time for the endFlag loop
     startTime = millis();
 
-    if (initSens == true) {
+    if (targetAction == INIT) {
 
       // init Sensor
       initVal = initSensor();
@@ -427,14 +533,25 @@ void loop() {
         bs[0] = 4;
         changeGPIOstatus(ERR);
       } else {
+        bs[1] = initVal >> 8;
+        bs[2] = initVal & 0xFF;
         bs[0] = 3;
+        initSuccess = true;
+
       }
 
       //------------------------------------------------------------------------------------------------------------------------
 
     } else {
 
-      changeGPIOstatus(WAIT);
+      if (targetAction == MENU) {
+        // if target is the target to start the game
+        changeGPIOstatus(RECV);
+
+      } else {
+
+        changeGPIOstatus(WAIT);
+      }
 
       // accessable as target (inner loop)
       while (endFlag == false) {
@@ -452,6 +569,7 @@ void loop() {
           bs[0] = 2;
           // stop endFlag loop
           endFlag = true;
+          changeGPIOstatus(SEND);
 
           break;
         }
@@ -462,18 +580,19 @@ void loop() {
           // write a hit in the connection array
           bs[0] = 1;
           endFlag = true;
+          changeGPIOstatus(RECV);
         }
       }
     }
 
     //--------------------------------------------------------------------------------------------------------------------------
 
-    changeGPIOstatus(SEND);
-
     //send the message
     esp_now_send(GAMESERVER_ap_mac, bs, sizeof(sensorData));
+
   }
 #endif //end -  Target loop
+
 }
 
 
@@ -505,13 +624,14 @@ void initEspNow() {
 
   // triggers everytime something is received by a device
   esp_now_register_recv_cb([](uint8_t *mac, uint8_t *data, uint8_t len) {
+
     // copy the data of the transfer array to data
     memcpy(&sensorData, data, sizeof(sensorData));
 
     // Server handling
 #ifdef GAMESERVER
 
-    if (initSens == true) {
+    if (targetAction == INIT) {
       if ((mac[0] == potentialTargetsMacs[currentTarget][0])
           && (mac[1] == potentialTargetsMacs[currentTarget][1])
           && (mac[2] == potentialTargetsMacs[currentTarget][2])
@@ -579,7 +699,7 @@ void scanForTargets() {
   }
   // clean up ram
   WiFi.scanDelete();
-  initSens = true;
+  targetAction = INIT;
 }
 #endif
 
@@ -595,11 +715,11 @@ int initSensor() {
   // get four current vals befor the game starts to calibrate itself
   delay(100);
   int val1 = analogRead(A0);
-  delay(500);
+  delay(800);
   int val2 = analogRead(A0);
-  delay(500);
+  delay(800);
   int val3 = analogRead(A0);
-  delay(500);
+  delay(800);
   int val4 = analogRead(A0);
 
   initVal = (val1 + val2 + val3 + val4) / 4;
@@ -638,6 +758,8 @@ void changeGPIOstatus(uint8_t state) {
 void rainbowEnd() {
   LED.white();
   delay(1000);
+  LED.violette();
+  delay(1000);
   LED.red();
   delay(1000);
   LED.yellow();
@@ -648,8 +770,17 @@ void rainbowEnd() {
   delay(1000);
   LED.blue();
   delay(1000);
-  LED.violette();
-  delay(1000);
+}
+
+//____Countdown_________________________________________________________________________________________________________________
+
+void countDown() {
+  LED.red();
+  delay(1500);
+  LED.yellow();
+  delay(1500);
+  LED.green();
+  delay(400);
 }
 
 //______________________________________________________________________________________________________________________________
