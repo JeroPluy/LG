@@ -31,7 +31,7 @@ extern "C" {
 //___defines____________________________________________________________________________________________________________________
 
 // Color Use Cases
-#define MENU 0     // yellow
+#define MENU 0      // yellow
 #define INIT 1      // blue
 #define CONN 2      // white
 #define RECV 3      // green
@@ -149,6 +149,7 @@ void setup() {
 //___gameserver_loop____________________________________________________________________________________________________________
 
 void loop() {
+
 #ifdef GAMESERVER
 #ifdef DEBUG
   Serial.println("===========================================================");
@@ -183,7 +184,7 @@ void loop() {
   // transfer array for data
   uint8_t bs[sizeof(sensorData)];
 
-  // copy all data from bs to sensorData
+  // copy all data from bs to sensorData (clear sensorData)
   memcpy(bs, &sensorData, sizeof(sensorData));
 
   //----------------------------------------------------------------------------------------------------------------------------
@@ -248,6 +249,7 @@ void loop() {
           haveReading = false;
           changeGPIOstatus(INIT);
         }
+
         // if no potential targets were found restart searching
         else {
           delay(100);
@@ -368,6 +370,9 @@ void loop() {
           // no interesting message received
           haveReading = false;
 
+          // set targetAction off
+          targetAction = 0;
+
         }
         // if no targets were found restart searching
         else {
@@ -426,7 +431,7 @@ void loop() {
 
       //------------------------------------------------------------------------------------------------------------------------
 
-      // analyses the answer of the target
+      // analyses the answer of the start target
       case 6:
 
         //if gets an answer
@@ -446,8 +451,6 @@ void loop() {
 #endif
             state = 7;
 
-            // set targetAction off
-            targetAction = 0;
             // set the target action to game setting
             bs[3] = 3;
 
