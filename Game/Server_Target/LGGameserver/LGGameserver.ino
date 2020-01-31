@@ -25,7 +25,7 @@ extern "C" {
 
 //___Modes______________________________________________________________________________________________________________________
 
-// unwanted modes should be commented out
+// unwanted mode should be commented out
 #define DEBUG
 
 //___defines____________________________________________________________________________________________________________________
@@ -612,8 +612,9 @@ void loop() {
 
       // connect to the next target
       case 9:
-        // 2 sec. before next target gets selected
-        delay(2000);
+        currentTime = random(500, 2000);
+        // between 0.5 and 2 sec. before next target gets selected
+        delay(currentTime);
         state = 7;
         break;
     }
