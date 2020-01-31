@@ -23,7 +23,7 @@ extern "C" {
 
 //___Modes______________________________________________________________________________________________________________________
 
-// unwanted modes should be commented out
+// unwanted modes should be commented out this comment is important
 #define TARGET
 //#define GAMESERVER
 
@@ -464,8 +464,9 @@ void loop() {
 
       // connect to the next target
       case 9:
-        // 2 sec. before next target gets selected
-        delay(2000);
+        currentTime = random(500, 2000);
+        // between 0.5 and 2 sec. before next target gets selected
+        delay(currentTime);
         state = 7;
         break;
     }
