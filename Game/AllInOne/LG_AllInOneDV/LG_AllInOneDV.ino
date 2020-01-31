@@ -271,9 +271,11 @@ void loop() {
 
           //if target responds sensor working
           if (sensorData.data[0] == 3) {
-
+           
 #ifdef DEBUG
-            Serial.println("Target sensor is working fine");
+            int initVal = (sensorData.data[1] << 8) | sensorData.data[2];
+            Serial.print("Target sensor is working fine: ");
+            Serial.println(initVal);
             Serial.println("===========================================================");
             Serial.println('\n');
 #endif
@@ -727,6 +729,8 @@ void loop() {
         changeGPIOstatus(ERR);
       } else {
         bs[0] = 3;
+        bs[1] = initVal >> 8;
+        bs[2] = initVal & 0xFF;
         initSuccess = true;
 
 #ifdef DEBUG
@@ -1096,6 +1100,7 @@ void rainbowEnd() {
 
 void countDown() {
 #ifdef DEBUG
+  Serial.println("===========================================================");
   Serial.println("Ready");
 #endif
   LED.red();
@@ -1107,6 +1112,8 @@ void countDown() {
   delay(1500);
 #ifdef DEBUG
   Serial.println("GOOOOOO");
+  Serial.println("===========================================================");
+  Serial.println('\n');
 #endif
   LED.green();
   delay(400);

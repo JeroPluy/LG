@@ -24,8 +24,8 @@ extern "C" {
 //___Modes______________________________________________________________________________________________________________________
 
 // unwanted modes should be commented out
-//#define TARGET
-#define GAMESERVER
+#define TARGET
+//#define GAMESERVER
 
 //___defines____________________________________________________________________________________________________________________
 
@@ -533,6 +533,8 @@ void loop() {
         bs[0] = 4;
         changeGPIOstatus(ERR);
       } else {
+        bs[1] = initVal >> 8;
+        bs[2] = initVal & 0xFF;
         bs[0] = 3;
         initSuccess = true;
 
