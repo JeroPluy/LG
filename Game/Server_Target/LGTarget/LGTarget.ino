@@ -1,17 +1,17 @@
 /**
       A game based on ESP8266 – Witty Cloud Modules, ESP-Now, and a laser pointer.
-      The goal of the game is to hit the flashing ESPs with the laser gun and achieve a high hit rate.
-      It's like Laser Tag on fixed targets with a real laser.
-      This is the program for the target ESPs. Please initialize it for all ESPs that you want to set as targets.
-      If you want to play more games at the same time, please change the BASE_SSID (line: 48) and the PSK (line: 49).
-
+      The goal of the game is to hit the flashing ESPs with the laser gun and achieve a high hit
+      rate. It's like Laser Tag on fixed targets with a real laser.
+      This is the program for the target ESPs. Please initialize it for all ESPs that you want to
+      set as targets.  If you want to play more games at the same time, please change the
+      BASE_SSID (line: 48) and the PSK (line: 49).
 
       @author Jero A
       @version 1.0
       @date 16.01.2020
 */
 
-//___Includes________________________________________________________________________________________________________________________
+//___Includes___________________________________________________________________________________________________________________
 
 // for LED control
 #include <Color.h>
@@ -22,14 +22,15 @@ extern "C" {
 #include <espnow.h>
 }
 
-//___Mode____________________________________________________________________________________________________________________________
+//___Modes______________________________________________________________________________________________________________________
 
+// unwanted modes should be commented out
 #define DEBUG
 
-//___defines_________________________________________________________________________________________________________________________
+//___defines____________________________________________________________________________________________________________________
 
 // Color Use Cases
-#define POWER 0     // yellow
+#define MENU 0      // yellow
 #define INIT 1      // blue
 #define CONN 2      // white
 #define RECV 3      // green
@@ -45,7 +46,7 @@ extern "C" {
 #define BASE_SSID "LG_"
 #define PSK  "TestTest!"
 
-//___global_vars_____________________________________________________________________________________________________________________
+//___global_vars________________________________________________________________________________________________________________
 
 // keep in sync with ESP_NOW sensor struct
 struct __attribute__((packed)) SENSOR_DATA {
@@ -56,22 +57,23 @@ struct __attribute__((packed)) SENSOR_DATA {
 volatile boolean haveReading = false;
 
 // should the sensor still be initialized
-volatile boolean initSens = false;
+uint8_t targetAction = 0;
 
 // set LED Pins for rot,green,blue
 Color LED(15, 12, 13);
 
-//___target_vars_____________________________________________________________________________________________________________________
-
 // server esp mac addresses for the targets
 
-uint8_t GAMESERVER_ap_mac[]   = {0xEE, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF};
-uint8_t GAMESERVER_sta_mac[]  = {0xEC, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF};
+uint8_t GAMESERVER_ap_mac[]   = {0xEE, 0xFA, 0xBC, 0x4C, 0x57, 0x12};
+uint8_t GAMESERVER_sta_mac[]  = {0xEC, 0xFA, 0xBC, 0x4C, 0x57, 0x12};
 
 // init sensor val
 int initVal;
 
-//___functions_setup_________________________________________________________________________________________________________________
+// initSuccess
+volatile boolean initSuccess = false;
+
+//___functions_setup____________________________________________________________________________________________________________
 
 void setup() {
 
@@ -80,15 +82,17 @@ void setup() {
 #ifdef DEBUG
   Serial.begin(74880);
   Serial.println("===========================================================");
-  Serial.print  ("Laser Game: ");
+  Serial.print("Laser Game: ");
   Serial.println("Debugmode on");
   Serial.println("===========================================================");
   Serial.println('\n');
+
+
   Serial.println("===========================================================");
   Serial.println("Target" );
   Serial.println("-----------------------------------------------------------");
-  Serial.print  ("This node AP mac: "); Serial.println(WiFi.softAPmacAddress());
-  Serial.print  ("This node STA mac: "); Serial.println(WiFi.macAddress());
+  Serial.print("This node AP mac: "); Serial.println(WiFi.softAPmacAddress());
+  Serial.print("This node STA mac: "); Serial.println(WiFi.macAddress());
   Serial.println("===========================================================");
   Serial.println('\n');
 #endif
@@ -107,7 +111,7 @@ void setup() {
 }
 
 
-//___target_loop_____________________________________________________________________________________________________________________
+//___target_loop________________________________________________________________________________________________________________
 
 void loop() {
 
@@ -125,10 +129,10 @@ void loop() {
   // value of the LDR before hit while game
   int analogVal = 0;
 
-  //---------------------------------------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------------------------------
 
   // standard led status if it isn't connected
-  if (bs[0] == 4) {
+  if (!initSuccess) {
     changeGPIOstatus(ERR);
   }
 #ifdef DEBUG
@@ -136,6 +140,7 @@ void loop() {
     changeGPIOstatus(RECV);
   }
 #endif
+
   else {
     changeGPIOstatus(OUT);
   }
@@ -145,11 +150,15 @@ void loop() {
 
     // reset the message notification
     haveReading = false;
+    // change for start
+
+    // get the target action
+    targetAction = sensorData.data[3];
 
     //time for the hit
     activeTime = (sensorData.data[0] << 8) | sensorData.data[1];
 
-    initSens = sensorData.data[3];
+
 
 #ifdef DEBUG
     Serial.println("===========================================================");
@@ -157,7 +166,7 @@ void loop() {
     Serial.print(activeTime);
     Serial.println(" ms");
     Serial.print("Sensor initialization : ");
-    Serial.println(initSens);
+    Serial.println(initVal);
     Serial.println("===========================================================");
     Serial.println('\n');
 #endif
@@ -165,7 +174,7 @@ void loop() {
     // start time for the endFlag loop
     startTime = millis();
 
-    if (initSens == true) {
+    if (targetAction == INIT) {
 
       // init Sensor
       initVal = initSensor();
@@ -177,6 +186,10 @@ void loop() {
         changeGPIOstatus(ERR);
       } else {
         bs[0] = 3;
+        bs[1] = initVal >> 8;
+        bs[2] = initVal & 0xFF;
+        initSuccess = true;
+
 #ifdef DEBUG
         Serial.println("===========================================================");
         Serial.print("init VAL: ");
@@ -186,13 +199,21 @@ void loop() {
         Serial.println("===========================================================");
         Serial.println('\n');
 #endif
+
       }
 
-      //-----------------------------------------------------------------------------------------------------------------------------
+      //------------------------------------------------------------------------------------------------------------------------
 
     } else {
 
-      changeGPIOstatus(WAIT);
+      if (targetAction == MENU) {
+        // if target is the target to start the game
+        changeGPIOstatus(RECV);
+
+      } else {
+
+        changeGPIOstatus(WAIT);
+      }
 
       // accessable as target (inner loop)
       while (endFlag == false) {
@@ -210,6 +231,7 @@ void loop() {
           bs[0] = 2;
           // stop endFlag loop
           endFlag = true;
+          changeGPIOstatus(SEND);
 #ifdef DEBUG
           Serial.println("===========================================================");
           Serial.println("Target timeout");
@@ -219,20 +241,20 @@ void loop() {
           break;
         }
 
-
-#ifdef DEBUG
-        //simulate hits for long active times
-        if (millis() - startTime > 4000) {
-          // write a hit in the connection array
-          bs[0] = 1;
-          endFlag = true;
-          Serial.println("===========================================================");
-          Serial.println("HIT");
-          Serial.println("===========================================================");
-          Serial.println('\n');
-        }
-#endif
-
+        /*
+          #ifdef DEBUG
+                //simulate hits for long active times
+                if (millis() - startTime > 4000) {
+                  // write a hit in the connection array
+                  bs[0] = 1;
+                  endFlag = true;
+                  Serial.println("===========================================================");
+                  Serial.println("HIT");
+                  Serial.println("===========================================================");
+                  Serial.println('\n');
+                }
+          #endif
+        */
 
         // normal hit
         if (analogVal >= (initVal * 1.2)) {
@@ -249,20 +271,21 @@ void loop() {
           // write a hit in the connection array
           bs[0] = 1;
           endFlag = true;
+          changeGPIOstatus(RECV);
         }
       }
     }
 
-    //-------------------------------------------------------------------------------------------------------------------------------
+    //--------------------------------------------------------------------------------------------------------------------------
 
-    changeGPIOstatus(SEND);
     //send the message
     esp_now_send(GAMESERVER_ap_mac, bs, sizeof(sensorData));
+
   }
 }
 
 
-//___extra_functions_________________________________________________________________________________________________________________
+//___extra_functions____________________________________________________________________________________________________________
 
 
 void initEspNow() {
@@ -296,7 +319,6 @@ void initEspNow() {
 
   esp_now_add_peer(GAMESERVER_ap_mac, ESP_NOW_ROLE_COMBO, WIFI_CHANNEL, NULL, 0);
   esp_now_add_peer(GAMESERVER_sta_mac, ESP_NOW_ROLE_COMBO, WIFI_CHANNEL, NULL, 0);
-
 #ifdef DEBUG
   Serial.println("===========================================================");
   Serial.print("Add Server peer : ");
@@ -318,13 +340,13 @@ void initEspNow() {
   esp_now_register_recv_cb([](uint8_t *mac, uint8_t *data, uint8_t len) {
     // copy the data of the transfer array to data
     memcpy(&sensorData, data, sizeof(sensorData));
-
     haveReading = true;
   });
+  
 }
 
 
-//___initSensor______________________________________________________________________________________________________________________
+//___initSensor_________________________________________________________________________________________________________________
 
 int initSensor() {
 
@@ -335,11 +357,11 @@ int initSensor() {
   // get four current vals befor the game starts to calibrate itself
   delay(100);
   int val1 = analogRead(A0);
-  delay(500);
+  delay(800);
   int val2 = analogRead(A0);
-  delay(500);
+  delay(800);
   int val3 = analogRead(A0);
-  delay(500);
+  delay(800);
   int val4 = analogRead(A0);
 
 #ifdef DEBUG
@@ -365,7 +387,7 @@ int initSensor() {
   return initVal;
 }
 
-//___changeGPIOstatus________________________________________________________________________________________________________________
+//___changeGPIOstatus___________________________________________________________________________________________________________
 
 void changeGPIOstatus(uint8_t state) {
   switch (state) {
@@ -389,4 +411,5 @@ void changeGPIOstatus(uint8_t state) {
     case 7: LED.black();    break;
   }
 }
-//___________________________________________________________________________________________________________________________________
+
+//______________________________________________________________________________________________________________________________
