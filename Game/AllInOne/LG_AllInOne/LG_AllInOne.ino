@@ -23,7 +23,11 @@ extern "C" {
 
 //___Modes______________________________________________________________________________________________________________________
 
+
 // unwanted mode should be commented out
+
+// unwanted modes should be commented out this comment is important
+
 #define TARGET
 //#define GAMESERVER
 
