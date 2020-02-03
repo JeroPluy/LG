@@ -28,7 +28,7 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
 
    - Make sure your tool settings are correct (Port could be different)
    
-   -![Settings in Tools](../SecretFiles/Settings%20for%20Tools.png)
+   ![Settings in Tools](../SecretFiles/Settings%20for%20Tools.png)
 
 4. Open the [GetServerMac](../Installation/GetServerMac)-program in the IDE
 
