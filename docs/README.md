@@ -94,7 +94,7 @@ Just wait for a single green target to play again and start again.
  
 At this point, I joined the project and build the code and project you know from this repository.
 
-The first adjustments were the change of the communication protokoll from Wifi to ESPNow, which worked pretty well and to changge the server from the raspberry pi to an other ESP8266, because the pi can't handle EPSNow. 
+The first adjustments involved changing the communication protocol from Wifi to ESPNow, which worked quite well, and changing the server from Raspberry-Pi to another ESP8266 because the Pi cannot handle EPSNow.
 
 
 This version is still a very basic one, and so it is also very expandable. I want to provide this as the basis for further adjustments and as a running version of itself.
