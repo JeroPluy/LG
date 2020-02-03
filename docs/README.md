@@ -55,19 +55,19 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
  10. Open [LGTarget](../Game/LGTarget/LGTarget.ino) with the Arduino IDE.
  
  11. Change the server Mac addresses for the targets (**don't** copy paste complete mac.txt) `(Code row : 71 - 72)`
- 
-    ```
-    // server esp mac addresses for the targets
-    #ifdef TARGET
+ `
+  
+       // server esp mac addresses for the targets
+       #ifdef TARGET
 
-    uint8_t GAMESERVER_ap_mac[]   = {0xEE, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF}; 
-    uint8_t GAMESERVER_sta_mac[]  = {0xEC, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF};
+       uint8_t GAMESERVER_ap_mac[]   = {0xEE, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF}; 
+       uint8_t GAMESERVER_sta_mac[]  = {0xEC, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF};
 
-    // init sensor val
-    int initVal;
+       // init sensor val
+       int initVal;
 
-    #endif
-    ```
+       #endif
+`
     
  12. Connect an ESP8266 that will be one of the targets.
  
