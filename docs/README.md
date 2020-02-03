@@ -10,9 +10,9 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
 ### Table of Contents
 
    1. [Installing Instructions](README.md#installing-instructions)
-   2. [The 2 versions](README.md#the-2-versions)
-   3. [Game Instructions](README.md#game-instructions)
-   4. [The project](README.md#the-project)
+   2. [Game Instructions](README.md#game-instructions)
+   3. [The project](README.md#the-project)
+   4. [The 2 versions](README.md#the-2-versions)
    5. [About the creater](README.md#about-the-creater)
 
 ### Installing Instructions
@@ -77,7 +77,17 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
  
  15. Installation completed.
 
-      
+ ### Game instructions
+ 
+The server starts the program with the initialization and the connections to the targets. Then the targets initialize their LDR sensor. 
+If the sensor sends a valid value, the LED of the target goes out, otherwise the LED lights up red and the target cannot be used.
+The game starts with the first hit of the target with **green LED**. The server counts down and the game begins.
+A random target lights up and the target is waiting to be hit by the laser. (Remember that the sensor is not the LED)
+If the target has been hit, the server LED lights up green, otherwise red. The goal of the game is to hit most of the targets in a given time. After the time has expired, the LED flashes for each hit. 
+Just wait for a single green target to play again and start again.
+ 
+ ### The project
+ 
  ### The 2 versions
  
  The project includes two versions of code. The first one is the complete code in on .ino file so you have everything concentrated. 
@@ -88,11 +98,7 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
  VERSION 1 : [LG_AllInOne](../Game/LG_AllInOne)
  
  VERSION 2 : [LG_Server_Target](../Game/LG_Server_Target)
- 
- ### Game instructions
- 
- ### The project
-  
+
  ### About the creater
       
 
