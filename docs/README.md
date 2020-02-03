@@ -90,6 +90,8 @@ Just wait for a single green target to play again and start again.
  
  ### The project
  
+ The idea for this game was conceived at the *Hackathon 2018* by a small group of [telematics students of the TH Wildau](https://en.th-wildau.de/index.php?id=23510). First it was designed to work between a Raspberry Pi 3.0 and ESP8266 with Wifi as connection protocol
+ 
  ### The 2 versions
  
  The project includes two versions of code. The first one is the complete code in on .ino file so you have everything concentrated. 
