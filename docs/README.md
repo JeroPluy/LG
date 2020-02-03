@@ -54,7 +54,7 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
   
  10. Open [LGTarget](../Game/LGTarget/LGTarget.ino) with the Arduino IDE.
  
- 11. Change the server Mac addresses for the targets (**don't** copy paste complete mac.txt) `(Code row : 71 - 72)`
+ 11. Change the server Mac addresses for the targets (**don't** copy paste complete mac.txt) `(Code row : 67 - 68)`
  ```
   
        // server esp mac addresses for the targets
