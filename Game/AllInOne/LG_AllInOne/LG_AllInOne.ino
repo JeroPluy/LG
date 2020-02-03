@@ -25,9 +25,6 @@ extern "C" {
 
 
 // unwanted mode should be commented out
-
-// unwanted modes should be commented out this comment is important
-
 #define TARGET
 //#define GAMESERVER
 
@@ -516,7 +513,6 @@ void loop() {
 
     // reset the message notification
     haveReading = false;
-    // change for start
 
     // get the target action
     targetAction = sensorData.data[3];
@@ -538,9 +534,9 @@ void loop() {
         bs[0] = 4;
         changeGPIOstatus(ERR);
       } else {
+        bs[0] = 3;
         bs[1] = initVal >> 8;
         bs[2] = initVal & 0xFF;
-        bs[0] = 3;
         initSuccess = true;
 
       }

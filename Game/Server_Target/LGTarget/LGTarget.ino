@@ -25,7 +25,7 @@ extern "C" {
 //___Modes______________________________________________________________________________________________________________________
 
 // unwanted mode should be commented out
-#define DEBUG
+//#define DEBUG
 
 //___defines____________________________________________________________________________________________________________________
 
@@ -150,7 +150,6 @@ void loop() {
 
     // reset the message notification
     haveReading = false;
-    // change for start
 
     // get the target action
     targetAction = sensorData.data[3];
