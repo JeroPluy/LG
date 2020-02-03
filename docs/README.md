@@ -85,6 +85,8 @@ The game starts with the first hit of the target with **green LED**. The server 
 A random target lights up and the target is waiting to be hit by the laser. (Remember that the sensor is not the LED)
 If the target has been hit, the server LED lights up green, otherwise red. The goal of the game is to hit most of the targets in a given time. After the time has expired, the LED flashes for each hit. 
 Just wait for a single green target to play again and start again.
+
+(`[Sequence diagram](LG_SD.pdf)`)
  
  ### The project
  
