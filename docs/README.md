@@ -11,7 +11,7 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
 
    1. [Installing Instructions](README.md#installing-instructions)
    2. [Game Instructions](README.md#game-instructions)
-   3. [The project](README.md#the-project)
+   3. [The project history](README.md#the-project-history)
    4. [The 2 versions](README.md#the-2-versions)
    5. [About the creater](README.md#about-the-creater)
 
@@ -88,7 +88,7 @@ Just wait for a single green target to play again and start again.
 
 ([Sequence diagram](LG%20SD.pdf) for visual game instructions)
  
- ### The project
+ ### The project history
  
  The idea for this game was developed at the *Hackathon 2018* by a small group of [telematics students from TH Wildau](https://en.th-wildau.de/index.php?id=23510). First of all, it should be implemented with a Raspberry Pi 3.0 as server, several ESP8266, Wifi as connection protocol and a normal monitor as output device. Due to some ["problems"](https://www.meinehochschulebehindertdaswlan.de/en/) this idea did not work well and the technical side of the project had to be revised.
  
