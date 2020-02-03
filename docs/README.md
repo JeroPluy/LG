@@ -19,14 +19,14 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
 
 1. Download the [Arduino IDE](https://www.arduino.cc/en/main/software) and install it. ([Install Guide](https://www.arduino.cc/en/Guide/HomePage))
 
-2. Add the needed libraries. 
+2. Add the needed libraries. (`LG/Installation/..`) 
 
    - ESP8266 ([How to add libraries](https://randomnerdtutorials.com/how-to-install-esp8266-board-arduino-ide/))
    - Color   &nbsp; &nbsp; &nbsp;([How to add .zip - libraries](https://www.arduino.cc/en/Guide/Libraries))  (The library is in the installation directory)
    
 3. Connect the ESP8266 that will be the server host to your PC.
 
-   - Make sure your tool settings are correct
+   - Make sure your tool settings are correct (Port could be different)
    
    -![Settings in Tools](../SecretFiles/Settings%20for%20Tools.png)
 
@@ -34,7 +34,9 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
 
 5. Upload the program to the ESP. (`Ctrl + U`)
 
-6. Copy the AP MAC and the STA MAC from the console to the [Server-Mac.txt](../Installation/Server-Mac.txt) file.
+6. Open the serial monitor. (`Ctrl + Shift + M` or `Tools -> Serial Monitor` )
+
+7. Copy the AP MAC and the STA MAC from the console to the [Server-Mac.txt](../Installation/Server-Mac.txt) file.
 
    ```
    Console Output Example:
@@ -46,13 +48,35 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
    ===========================================================
    ```
    
-  7. You will find the remaining installation instructions in the READMEs of the variants
+  8. Open [LGGameserver](../Game/LGGameserver/LGGameserver.ino) with the Arduino IDE.
   
-      - [AllInOne](AllInOneREADME.md)     
-      - [Server-Target](Server-TargetREADME.md)
-      
-         * If you want some printouts on the console, use the \*DV (_DebugVersion_)
-      
+  9. Upload the program to the ESP. (`Ctrl + U`)
+  
+ 10. Open [LGTarget](../Game/LGTarget/LGTarget.ino) with the Arduino IDE.
+ 
+ 11. Change the server Mac addresses for the targets (**don't** copy paste complete mac.txt) `(Code row : 71 - 72)`
+ 
+    ```
+    // server esp mac addresses for the targets
+    #ifdef TARGET
+
+    uint8_t GAMESERVER_ap_mac[]   = {0xEE, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF}; 
+    uint8_t GAMESERVER_sta_mac[]  = {0xEC, 0xFA, 0xBC, 0x0C, 0xE6, 0xAF};
+
+    // init sensor val
+    int initVal;
+
+    #endif
+    ```
+    
+ 12. Connect an ESP8266 that will be one of the targets.
+ 
+ 13. Upload the program to the ESP. (`Ctrl + U`)
+ 
+ 14. Repeat the steps 12 and 13 for every target.
+ 
+ 15. Installation completed.
+
       
  ### The 2 versions
  
