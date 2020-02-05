@@ -36,7 +36,8 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
 
 6. Open the serial monitor. (`Ctrl + Shift + M` or `Tools -> Serial Monitor` )
 
-7. Copy the AP MAC and the STA MAC from the console to the [Server-Mac.txt](../Installation/Server-Mac.txt) file.
+7. Copy the AP MAC and the STA MAC from the console to the [Server-Mac.txt](../Installation/Server-Mac.txt) file. <br/>
+   *(There should be enough time, but if you have not received a printout on the monitor, press the reset button on the ESP)*
 
    ```
    Console Output Example:
@@ -54,7 +55,7 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
   
  10. Open [LGTarget](../Game/LGTarget/LGTarget.ino) with the Arduino IDE.
  
- 11. Change the server Mac addresses for the targets (**don't** copy paste complete mac.txt) `(Code row : 67 - 68)`
+ 11. Change the server Mac addresses for the targets (**don't** just copy the entire mac.txt file) `(Code row : 67 - 68)`
  ```
   
        // server esp mac addresses for the targets
