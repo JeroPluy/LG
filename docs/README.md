@@ -93,11 +93,9 @@ Just wait for a single green target to play again and start again.
  The idea for this game was developed at the *Hackathon 2018* by a small group of [telematics students from TH Wildau](https://en.th-wildau.de/index.php?id=23510). First of all, it should be implemented with a Raspberry Pi 3.0 as server, several ESP8266, Wifi as connection protocol and a normal monitor as output device. Due to some ["problems"](https://www.meinehochschulebehindertdaswlan.de/en/) this idea did not work well and the technical side of the project had to be revised.
  
 At this point, I joined the project and build the code and project you know from this repository.
-
 The first adjustments involved changing the communication protocol from Wifi to ESPNow, which worked quite well, and changing the server from Raspberry-Pi to another ESP8266 because the Pi cannot handle EPSNow.
+This version is still a very basic one, and so it is also very expandable. I want to provide this as the basis for further adjustments and as the first running version.
 
-
-This version is still a very basic one, and so it is also very expandable. I want to provide this as the basis for further adjustments and as a running version of itself.
  
  ### The 2 versions
  
