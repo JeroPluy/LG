@@ -8,4 +8,9 @@ Innenmaße des Cubes :
 			Länge  93mm
 			Breite 108mm
 			Höhe   20mm
+
+Außenmaße des Cubes : 	
+			Länge  103mm ~ 105mm
+			Breite 118mm ~ 120mm 
+			Höhe   26mm  ~ 26mm
 			
