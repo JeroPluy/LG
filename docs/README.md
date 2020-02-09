@@ -87,7 +87,7 @@ A random target lights up and the target is waiting to be hit by the laser. (Rem
 If the target has been hit, the server LED lights up green, otherwise red. The goal of the game is to hit most of the targets in a given time. After the time has expired, the LED flashes for each hit. 
 Just wait for a single green target to play again and start again.
 
-([Sequence diagram](LG%20SD.pdf) for visual game instructions)
+([Sequence diagram](LG%20SD%20V2.pdf) for visual game instructions)
  
  ### The project history
  
