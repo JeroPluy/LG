@@ -24,7 +24,7 @@ extern "C" {
 //___Modes______________________________________________________________________________________________________________________
 
 // unwanted modes should be commented out
-#define DEBUG
+//#define DEBUG
 //#define TARGET
 #define GAMESERVER
 
@@ -76,6 +76,9 @@ int initVal;
 
 // initSuccess
 volatile boolean initSuccess = false;
+
+//last message time
+long lastRequestTime = 0;
 
 #endif
 
@@ -164,6 +167,9 @@ void loop() {
   // counter var
   uint8_t i = 0;
 
+  //start tries
+  uint8_t startTry = 0;
+
   // target counter var
   uint8_t nextTarget = 0;
 
@@ -203,6 +209,7 @@ void loop() {
         changeGPIOstatus(INIT);
         targetsFound = 0;
         potentialTargets = 0;
+        startTry = 0;
         scanForTargets();
         state++;
         break;
@@ -282,7 +289,7 @@ void loop() {
 #endif
             // add it to the actuel target list for the game
             for (i = 0; i < 6; i++) {
-              targetMacs[currentTarget][i] = potentialTargetsMacs[currentTarget][i];
+              targetMacs[targetsFound][i] = potentialTargetsMacs[currentTarget][i];
             }
             targetsFound++;
             state = 3;
@@ -291,7 +298,9 @@ void loop() {
           //target respond timeout
           else if (sensorData.data[0] == 4) {
 #ifdef DEBUG
-            Serial.println("Target sensor is useless");
+            int initVal = (sensorData.data[1] << 8) | sensorData.data[2];
+            Serial.println("Target sensor is useless: ");
+            Serial.println(initVal);
             Serial.println("===========================================================");
             Serial.println('\n');
 #endif
@@ -339,7 +348,7 @@ void loop() {
           // reset next Targe
           nextTarget = 0;
 
-          state ++;
+          state = 4;
         }
         break;
 
@@ -474,8 +483,16 @@ void loop() {
             Serial.println('\n');
 
 #endif
-            // refresh the start-"button"
-            state = 5;
+            startTry++;
+
+            if (startTry == 5) {
+              // restart the program
+              state = 0;
+            } else {
+
+              // refresh the start-"button"
+              state = 5;
+            }
           }
         }
 
@@ -647,16 +664,20 @@ void loop() {
 
       // connect to the next target
       case 9:
-        currentTime = random(500, 2000);
+        currentTime = random(2000);
         // between 0.5 and 2 sec. before next target gets selected
-        delay(currentTime);
+        delay(500);
         state = 7;
         break;
     }
   }
 #endif //end -  Server loop
 
+
+
   //___target_loop______________________________________________________________________________________________________________
+
+
 
 #ifdef TARGET
 
@@ -693,6 +714,9 @@ void loop() {
   // if the target gets a message from the server
   if (haveReading) {
 
+    //refresh last request timer
+    lastRequestTime = millis();
+
     // reset the message notification
     haveReading = false;
     // change for start
@@ -726,10 +750,15 @@ void loop() {
 
 
       if ((initVal < 5) || (initVal > 850)) {
+        
         // message for the server
         bs[0] = 4;
+        bs[1] = initVal >> 8;
+        bs[2] = initVal & 0xFF;
         changeGPIOstatus(ERR);
-      } else {
+        initSuccess = false;
+      } 
+      else {
         bs[0] = 3;
         bs[1] = initVal >> 8;
         bs[2] = initVal & 0xFF;
@@ -827,6 +856,27 @@ void loop() {
     esp_now_send(GAMESERVER_ap_mac, bs, sizeof(sensorData));
 
   }
+
+  
+  // if the target gets in the last 5 min no request
+  if ((millis() - lastRequestTime) > 300000) {
+    // not used
+#ifdef DEBUG
+    Serial.println("===========================================================");
+    Serial.println("no request in the last 5 minutes");
+    Serial.println("===========================================================");
+#endif
+    changeGPIOstatus(ERR);
+    
+    //sensor values are to old
+    initSuccess = false;
+    
+    // refresh last change
+    lastRequestTime = millis();
+  }
+
+
+
 #endif //end -  Target loop
 }
 
