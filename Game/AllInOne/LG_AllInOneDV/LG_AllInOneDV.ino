@@ -24,7 +24,7 @@ extern "C" {
 //___Modes______________________________________________________________________________________________________________________
 
 // unwanted modes should be commented out
-//#define DEBUG
+#define DEBUG
 //#define TARGET
 #define GAMESERVER
 
@@ -664,9 +664,9 @@ void loop() {
 
       // connect to the next target
       case 9:
-        currentTime = random(2000);
+        currentTime = random(500, 2000);
         // between 0.5 and 2 sec. before next target gets selected
-        delay(500);
+        delay(currentTime);
         state = 7;
         break;
     }
@@ -719,7 +719,6 @@ void loop() {
 
     // reset the message notification
     haveReading = false;
-    // change for start
 
     // get the target action
     targetAction = sensorData.data[3];
@@ -750,14 +749,14 @@ void loop() {
 
 
       if ((initVal < 5) || (initVal > 850)) {
-        
+
         // message for the server
         bs[0] = 4;
         bs[1] = initVal >> 8;
         bs[2] = initVal & 0xFF;
         changeGPIOstatus(ERR);
         initSuccess = false;
-      } 
+      }
       else {
         bs[0] = 3;
         bs[1] = initVal >> 8;
@@ -857,7 +856,6 @@ void loop() {
 
   }
 
-  
   // if the target gets in the last 5 min no request
   if ((millis() - lastRequestTime) > 300000) {
     // not used
@@ -867,15 +865,13 @@ void loop() {
     Serial.println("===========================================================");
 #endif
     changeGPIOstatus(ERR);
-    
+
     //sensor values are to old
     initSuccess = false;
-    
+
     // refresh last change
     lastRequestTime = millis();
   }
-
-
 
 #endif //end -  Target loop
 }
