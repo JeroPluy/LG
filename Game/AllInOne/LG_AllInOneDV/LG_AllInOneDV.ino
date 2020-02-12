@@ -291,7 +291,9 @@ void loop() {
           //target respond timeout
           else if (sensorData.data[0] == 4) {
 #ifdef DEBUG
-            Serial.println("Target sensor is useless");
+            int initVal = (sensorData.data[1] << 8) | sensorData.data[2];
+            Serial.print("Target sensor is useless: ");
+            Serial.println(initVal);
             Serial.println("===========================================================");
             Serial.println('\n');
 #endif
