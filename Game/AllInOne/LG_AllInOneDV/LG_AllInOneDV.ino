@@ -299,7 +299,7 @@ void loop() {
           else if (sensorData.data[0] == 4) {
 #ifdef DEBUG
             int initVal = (sensorData.data[1] << 8) | sensorData.data[2];
-            Serial.print("Target sensor is useless: ");
+            Serial.println("Target sensor is useless: ");
             Serial.println(initVal);
             Serial.println("===========================================================");
             Serial.println('\n');
@@ -719,6 +719,7 @@ void loop() {
 
     // reset the message notification
     haveReading = false;
+    // change for start
 
     // get the target action
     targetAction = sensorData.data[3];
@@ -749,22 +750,14 @@ void loop() {
 
 
       if ((initVal < 5) || (initVal > 850)) {
-<<<<<<< Updated upstream
         
-=======
-
->>>>>>> Stashed changes
         // message for the server
         bs[0] = 4;
         bs[1] = initVal >> 8;
         bs[2] = initVal & 0xFF;
         changeGPIOstatus(ERR);
         initSuccess = false;
-<<<<<<< Updated upstream
       } 
-=======
-      }
->>>>>>> Stashed changes
       else {
         bs[0] = 3;
         bs[1] = initVal >> 8;
@@ -864,10 +857,7 @@ void loop() {
 
   }
 
-<<<<<<< Updated upstream
   
-=======
->>>>>>> Stashed changes
   // if the target gets in the last 5 min no request
   if ((millis() - lastRequestTime) > 300000) {
     // not used
@@ -877,26 +867,16 @@ void loop() {
     Serial.println("===========================================================");
 #endif
     changeGPIOstatus(ERR);
-<<<<<<< Updated upstream
     
     //sensor values are to old
     initSuccess = false;
     
-=======
-
-    //sensor values are to old
-    initSuccess = false;
-
->>>>>>> Stashed changes
     // refresh last change
     lastRequestTime = millis();
   }
 
-<<<<<<< Updated upstream
 
 
-=======
->>>>>>> Stashed changes
 #endif //end -  Target loop
 }
 
