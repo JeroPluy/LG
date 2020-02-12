@@ -856,7 +856,6 @@ void loop() {
     esp_now_send(GAMESERVER_ap_mac, bs, sizeof(sensorData));
 
   }
-
   
   // if the target gets in the last 5 min no request
   if ((millis() - lastRequestTime) > 300000) {
@@ -874,8 +873,6 @@ void loop() {
     // refresh last change
     lastRequestTime = millis();
   }
-
-
 
 #endif //end -  Target loop
 }
