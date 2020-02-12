@@ -664,9 +664,9 @@ void loop() {
 
       // connect to the next target
       case 9:
-        currentTime = random(2000);
+        currentTime = random(500, 2000);
         // between 0.5 and 2 sec. before next target gets selected
-        delay(500);
+        delay(currentTime);
         state = 7;
         break;
     }
