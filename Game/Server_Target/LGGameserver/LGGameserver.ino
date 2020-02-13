@@ -196,7 +196,7 @@ void setup() {
   initEspNow();
 
   displayLogo();
-  
+
 #ifdef DEBUG
   Serial.println("===========================================================");
   Serial.println("Setup done");
@@ -205,8 +205,6 @@ void setup() {
 #endif
 }
 
-
-//___gameserver_loop____________________________________________________________________________________________________________
 
 //___gameserver_loop____________________________________________________________________________________________________________
 
@@ -314,6 +312,7 @@ void loop() {
           state++;
           haveReading = false;
           changeGPIOstatus(INIT);
+          textWithNumber("useful", "Targets", targetsFound);
         }
 
         // if no potential targets were found restart searching
@@ -350,6 +349,7 @@ void loop() {
               targetMacs[targetsFound][i] = potentialTargetsMacs[currentTarget][i];
             }
             targetsFound++;
+            textWithNumber("useful", "Targets", targetsFound);
             state = 3;
           }
 
@@ -417,13 +417,8 @@ void loop() {
         if (targetsFound) {
 
           state++;
-
           // shows how many targets you found (LED blink)
           for (i = 0; i < targetsFound; i++) {
-            changeGPIOstatus(CONN);
-            delay(200);
-            changeGPIOstatus(OUT);
-            delay(800);
 #ifdef DEBUG
             Serial.println("===========================================================");
             Serial.print("Server found Target ");
@@ -497,6 +492,10 @@ void loop() {
         sendTime = millis();
         state++;
         changeGPIOstatus(MENU);
+
+        // display start menu
+        startMenu();
+
         break;
 
       //------------------------------------------------------------------------------------------------------------------------
@@ -609,6 +608,8 @@ void loop() {
         Serial.println('\n');
 #endif
 
+        textWithNumber("Hits:", "", hitCounter);
+
         // sends bs to the selected target
         esp_now_send(targetMacs[currentTarget], bs, sizeof(sensorData));
 
@@ -639,6 +640,7 @@ void loop() {
             Serial.println('\n');
 #endif
             hitCounter++;
+            textWithNumber("Hits:", "", hitCounter);
 
             //target respond timeout
           } else if (sensorData.data[0] == 2) {
@@ -684,34 +686,15 @@ void loop() {
           Serial.println("===========================================================");
           Serial.println('\n');
 #endif
-          // visual game over
-          rainbowEnd();
 
-          if (hitCounter == 0) {
-            // no hits reproted
-            changeGPIOstatus(ERR);
-            delay(8000);
-          } else
-          {
-            // report hit counter by led blinking
-            // blink minimal 10 times
-            for (i = 0; i <= hitCounter; i++) {
-              changeGPIOstatus(RECV);
-              delay(200);
-              changeGPIOstatus(OUT);
-              delay(800);
-            }
+          endScreen(hitCounter);
 
-            changeGPIOstatus(MENU);
-            // in 10 sec starts new game
-            delay(10000);
 #ifdef DEBUG
-            Serial.println("===========================================================");
-            Serial.println("Restart the Game :D");
-            Serial.println("===========================================================");
-            Serial.println('\n');
+          Serial.println("===========================================================");
+          Serial.println("Restart the Game :D");
+          Serial.println("===========================================================");
+          Serial.println('\n');
 #endif
-          }
 
           // end of this round
           state = 0;
@@ -730,6 +713,7 @@ void loop() {
     }
   }
 }
+
 
 
 //___extra_functions____________________________________________________________________________________________________________
@@ -878,7 +862,7 @@ void scanForTargets() {
   targetAction = 1;
 
   // print on display
-  textWithNumber("Potential","Targets :",potentialTargets);
+  textWithNumber("Potential", "Targets :", potentialTargets);
 #ifdef DEBUG
   Serial.println("===============================================");
   Serial.println("End of scan methode");
@@ -913,25 +897,6 @@ void changeGPIOstatus(uint8_t state) {
   }
 }
 
-//____Game_over_________________________________________________________________________________________________________________
-
-void rainbowEnd() {
-  LED.white();
-  delay(1000);
-  LED.violette();
-  delay(1000);
-  LED.red();
-  delay(1000);
-  LED.yellow();
-  delay(1000);
-  LED.green();
-  delay(1000);
-  LED.cyan();
-  delay(1000);
-  LED.blue();
-  delay(1000);
-}
-
 //____Start_Screen______________________________________________________________________________________________________________
 
 void startScreen(void) {
@@ -959,10 +924,79 @@ void startScreen(void) {
   }
 }
 
+//____End_Screen________________________________________________________________________________________________________________
+
+void endScreen(int hitCounter) {
+  display.clearDisplay();
+  display.setCursor(16, 1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setTextSize(4);
+  display.print("Game");
+  display.setCursor(16, 32);
+  display.print("Over");
+  display.display();
+  delay(3000);
+  for (int16_t i = 63; i / 2 > 0; i -= 1) {
+    // The INVERSE color is used so rectangles alternate white/black
+    display.fillRect(i, i, display.width() - i * 2, display.height() - i * 2, SSD1306_WHITE);
+    display.display(); // Update screen with each newly-drawn rectangle
+    delay(10);
+  }
+  display.fillRect(0, 0, display.width(), display.height(), WHITE);
+  display.display();
+  delay(500);
+  uint8_t x = hitCounter % 10;
+  display.setTextColor(SSD1306_BLACK);
+  display.setTextSize(7);
+  if (hitCounter > 99) {
+    display.setCursor(1, 8);
+    display.print(hitCounter / 100);
+    display.display();
+    delay(1000);
+    display.setCursor(43, 8);
+    display.print((hitCounter % 100 - x) / 10);
+    display.display();
+    delay(1000);
+    display.setCursor(86, 8);
+    display.print(x);
+    display.display();
+    delay(1000);
+  } else {
+    display.setCursor(26, 8);
+    display.print((hitCounter % 100 - x) / 10);
+    display.display();
+    delay(1000);
+    display.setCursor(68, 8);
+    display.print(x);
+    display.display();
+    delay(1000);
+  }
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.setTextColor(SSD1306_WHITE);
+  display.setTextSize(1);
+  display.print("Congratulations");
+  display.setCursor(1, 17);
+  display.print("hits found:");
+  if (hitCounter < 100) {
+    display.setTextSize(3);
+    display.setCursor(80, 36);
+  } else {
+    display.setTextSize(3);
+    display.setCursor(54, 36);
+  }
+  display.print(hitCounter);
+  display.display();
+  display.startscrollright(0x00, 0x01);
+  delay(9700);
+  display.stopscroll();
+}
+
+
 //____Display_Logo______________________________________________________________________________________________________________
 
-void displayLogo(void){
-   display.clearDisplay();
+void displayLogo(void) {
+  display.clearDisplay();
   // Draw bitmap on the screen
   display.drawBitmap(0, 0, thLogo, 128, 64, WHITE);
   display.display();
@@ -978,33 +1012,104 @@ void textWithNumber(char text1[], char text2[], int number) {
   display.print(text1);
   display.setCursor(1, 17);
   display.print(text2);
-  display.setTextSize(4);
-  display.setCursor(80, 36);
-  display.print(number);
+  if (text2[0] == '\0') {
+    if (number < 100) {
+      display.setTextSize(4);
+      display.setCursor(80, 36);
+    } else {
+      display.setTextSize(4);
+      display.setCursor(54, 36);
+    }
+    display.print(number);
+    display.display();
+  } else {
+    if (number < 100) {
+      display.setTextSize(3);
+      display.setCursor(90, 42);
+    } else {
+      display.setTextSize(3);
+      display.setCursor(72, 42);
+    }
+    display.print(number);
+    display.display();
+  }
+}
+
+//____start_Menu_______________________________________________________________________________________________________________
+
+void startMenu(void) {
+  display.clearDisplay();
+  display.setCursor(21, 1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setTextSize(2);
+  display.print("Hit the");
+  display.setTextSize(3);
+  display.setCursor(18, 16);
+  display.print("green");
+  display.setTextSize(2);
+  display.setCursor(27 , 44);
+  display.print("Target");
   display.display();
 }
 
 //____Countdown_________________________________________________________________________________________________________________
 
 void countDown() {
+  display.clearDisplay();
+
+  LED.red();
+  display.drawRect(0, 0, display.width(), display.height(), WHITE);
+  display.drawCircle(20, 31 , 20, WHITE);
+  display.drawCircle(63, 31 , 20, WHITE);
+  display.drawCircle(106, 31 , 20, WHITE);
+  display.display();
+  delay(500);
+
 #ifdef DEBUG
   Serial.println("===========================================================");
-  Serial.println("Ready");
+  Serial.println("3");
 #endif
-  LED.red();
-  delay(1500);
+  display.setCursor(13, 21);
+  display.setTextColor(SSD1306_WHITE);
+  display.setTextSize(3);
+  display.print("3");
+  display.display();
+  delay(1000);
+
 #ifdef DEBUG
-  Serial.println("SET");
+  Serial.println("2");
 #endif
-  LED.yellow();
-  delay(1500);
+  display.setCursor(56, 21);
+  display.setTextColor(SSD1306_WHITE);
+  display.setTextSize(3);
+  display.print("2");
+  display.display();
+  delay(1000);
+
+#ifdef DEBUG
+  Serial.println("1");
+#endif
+  display.setCursor(99, 21);
+  display.setTextColor(SSD1306_WHITE);
+  display.setTextSize(3);
+  display.print("1");
+  display.display();
+  delay(1000);
+
 #ifdef DEBUG
   Serial.println("GOOOOOO");
   Serial.println("===========================================================");
   Serial.println('\n');
 #endif
+
+  display.drawCircle(20, 28 , 20, WHITE);
+  display.fillCircle(20, 31 , 20, SSD1306_WHITE);
+  display.drawCircle(63, 28 , 20, WHITE);
+  display.fillCircle(63, 31 , 20, SSD1306_WHITE);
+  display.drawCircle(106, 28 , 20, WHITE);
+  display.fillCircle(106, 31 , 20, SSD1306_WHITE);
   LED.green();
-  delay(400);
+  display.display();
 }
 
 //______________________________________________________________________________________________________________________________

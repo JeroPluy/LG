@@ -31,7 +31,6 @@ void Color::blue()
   digitalWrite(_greenPin, LOW); 
   digitalWrite(13, HIGH); 
   digitalWrite(15, LOW); 
-
 }
 
 void Color::red()
