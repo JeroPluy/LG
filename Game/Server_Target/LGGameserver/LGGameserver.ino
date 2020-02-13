@@ -130,6 +130,9 @@ void loop() {
   // counter var
   uint8_t i = 0;
 
+  //start tries
+  uint8_t startTry = 0;
+
   // target counter var
   uint8_t nextTarget = 0;
 
@@ -169,6 +172,7 @@ void loop() {
         changeGPIOstatus(INIT);
         targetsFound = 0;
         potentialTargets = 0;
+        startTry = 0;
         scanForTargets();
         state++;
         break;
@@ -248,7 +252,7 @@ void loop() {
 #endif
             // add it to the actuel target list for the game
             for (i = 0; i < 6; i++) {
-              targetMacs[currentTarget][i] = potentialTargetsMacs[currentTarget][i];
+              targetMacs[targetsFound][i] = potentialTargetsMacs[currentTarget][i];
             }
             targetsFound++;
             state = 3;
@@ -257,7 +261,9 @@ void loop() {
           //target respond timeout
           else if (sensorData.data[0] == 4) {
 #ifdef DEBUG
-            Serial.println("Target sensor is useless");
+            int initVal = (sensorData.data[1] << 8) | sensorData.data[2];
+            Serial.println("Target sensor is useless: ");
+            Serial.println(initVal);
             Serial.println("===========================================================");
             Serial.println('\n');
 #endif
@@ -305,7 +311,7 @@ void loop() {
           // reset next Targe
           nextTarget = 0;
 
-          state ++;
+          state = 4;
         }
         break;
 
@@ -440,8 +446,16 @@ void loop() {
             Serial.println('\n');
 
 #endif
-            // refresh the start-"button"
-            state = 5;
+            startTry++;
+
+            if (startTry == 5) {
+              // restart the program
+              state = 0;
+            } else {
+
+              // refresh the start-"button"
+              state = 5;
+            }
           }
         }
 
@@ -621,7 +635,6 @@ void loop() {
     }
   }
 }
-
 
 //___extra_functions____________________________________________________________________________________________________________
 

@@ -25,7 +25,7 @@ extern "C" {
 //___Modes______________________________________________________________________________________________________________________
 
 // unwanted mode should be commented out
-#define DEBUG
+//#define DEBUG
 
 //___defines____________________________________________________________________________________________________________________
 
@@ -72,6 +72,9 @@ int initVal;
 
 // initSuccess
 volatile boolean initSuccess = false;
+
+//last message time
+long lastRequestTime = 0;
 
 //___functions_setup____________________________________________________________________________________________________________
 
@@ -148,6 +151,9 @@ void loop() {
   // if the target gets a message from the server
   if (haveReading) {
 
+    //refresh last request timer
+    lastRequestTime = millis();
+
     // reset the message notification
     haveReading = false;
 
@@ -180,8 +186,13 @@ void loop() {
 
 
       if ((initVal < 5) || (initVal > 850)) {
+
         // message for the server
         bs[0] = 4;
+        bs[1] = initVal >> 8;
+        bs[2] = initVal & 0xFF;
+        changeGPIOstatus(ERR);
+        initSuccess = false;
         changeGPIOstatus(ERR);
       } else {
         bs[0] = 3;
@@ -281,6 +292,24 @@ void loop() {
     esp_now_send(GAMESERVER_ap_mac, bs, sizeof(sensorData));
 
   }
+
+  // if the target gets in the last 5 min no request
+  if ((millis() - lastRequestTime) > 300000) {
+    // not used
+#ifdef DEBUG
+    Serial.println("===========================================================");
+    Serial.println("no request in the last 5 minutes");
+    Serial.println("===========================================================");
+#endif
+    changeGPIOstatus(ERR);
+
+    //sensor values are to old
+    initSuccess = false;
+
+    // refresh last change
+    lastRequestTime = millis();
+  }
+
 }
 
 
@@ -341,7 +370,7 @@ void initEspNow() {
     memcpy(&sensorData, data, sizeof(sensorData));
     haveReading = true;
   });
-  
+
 }
 
 
