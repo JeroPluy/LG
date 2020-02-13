@@ -18,11 +18,11 @@ x = 21 / size
 
 y*(7*Size + Size) = 64
 
-x = 64/(7*Size + Size)
+y = 64/(7*Size + Size)
 
-x = 64/(8*size)
+y = 64/(8*size)
 
-x = 8 / size
+y = 8 / size
 
 
 SIZE 	| 01 | 02 | 03 | 04 | 05 | 06 | 07 | 08 | 09 |
