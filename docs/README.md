@@ -15,7 +15,9 @@ If you ever want to shoot with a laser pointer at an actual target, this game is
    4. [The 2 versions](README.md#the-2-versions)
    5. [About the creater](README.md#about-the-creater)
 
-### Installing Instructions
+### Installing Guide
+
+Estimated time : ~ 10 minutes
 
 1. Download the [Arduino IDE](https://www.arduino.cc/en/main/software) and install it. ([Install Guide](https://www.arduino.cc/en/Guide/HomePage))
 
