@@ -162,6 +162,7 @@ uint8_t currentTarget = 0;
 //___function_setup_____________________________________________________________________________________________________________
 
 void setup() {
+  Wire.begin(5, 4);
 
   changeGPIOstatus(INIT);
 
@@ -312,7 +313,6 @@ void loop() {
           state++;
           haveReading = false;
           changeGPIOstatus(INIT);
-          textWithNumber("useful", "Targets", targetsFound);
         }
 
         // if no potential targets were found restart searching
@@ -350,6 +350,8 @@ void loop() {
             }
             targetsFound++;
             textWithNumber("useful", "Targets", targetsFound);
+            // for better reading
+            delay(1000);
             state = 3;
           }
 
@@ -862,7 +864,7 @@ void scanForTargets() {
   targetAction = 1;
 
   // print on display
-  textWithNumber("Potential", "Targets :", potentialTargets);
+  textWithNumber("Potential", "Targets:", potentialTargets);
 #ifdef DEBUG
   Serial.println("===============================================");
   Serial.println("End of scan methode");
@@ -899,7 +901,7 @@ void changeGPIOstatus(uint8_t state) {
 
 //____Start_Screen______________________________________________________________________________________________________________
 
-void startScreen(void) {
+void startScreen() {
   display.clearDisplay();
   display.setTextColor(SSD1306_WHITE);
   display.setTextSize(1);
@@ -995,7 +997,7 @@ void endScreen(int hitCounter) {
 
 //____Display_Logo______________________________________________________________________________________________________________
 
-void displayLogo(void) {
+void displayLogo() {
   display.clearDisplay();
   // Draw bitmap on the screen
   display.drawBitmap(0, 0, thLogo, 128, 64, WHITE);

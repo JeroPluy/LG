@@ -137,7 +137,8 @@ void loop() {
   }
 #ifdef DEBUG
   else if (1) {
-    changeGPIOstatus(RECV);
+    // to be sure that it is working
+    LED.violette();
   }
 #endif
 
@@ -341,7 +342,7 @@ void initEspNow() {
     memcpy(&sensorData, data, sizeof(sensorData));
     haveReading = true;
   });
-  
+
 }
 
 
