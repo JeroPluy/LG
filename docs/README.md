@@ -107,7 +107,7 @@ This version is still a very basic one, and so it is also very expandable. I wan
  The second code is separated into two programs - the server program and the target program. It is easier to understand and to reverse-engineer.
  It is up to you which version you want to use. Both have the same program sequences.
  
- VERSION 1 : [LG_AllInOne](../Game/LG_AllInOne)
+ VERSION 1 : [LG_AllInOne](https://github.com/JeroPluy/LG/tree/2e100b1a421c628c21f673b690ee3ac81b1747f8/Game)
  
  VERSION 2 : [LG_Server_Target](../Game/LG_Server_Target)
 
