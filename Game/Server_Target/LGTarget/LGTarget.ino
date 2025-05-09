@@ -135,13 +135,12 @@ void loop() {
   if (!initSuccess) {
     changeGPIOstatus(ERR);
   }
-#ifdef DEBUG
+/*#ifdef DEBUG
   else if (1) {
     // to be sure that it is working
     LED.violette();
   }
-#endif
-
+#endif*/
   else {
     changeGPIOstatus(OUT);
   }
@@ -184,6 +183,7 @@ void loop() {
         // message for the server
         bs[0] = 4;
         changeGPIOstatus(ERR);
+        initSuccess = false;
       } else {
         bs[0] = 3;
         bs[1] = initVal >> 8;
@@ -280,6 +280,7 @@ void loop() {
 
     //send the message
     esp_now_send(GAMESERVER_ap_mac, bs, sizeof(sensorData));
+    delay(450);
 
   }
 }
